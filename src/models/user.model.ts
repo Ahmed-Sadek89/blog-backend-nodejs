@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import {users, user_login} from "../dtos/users.dto";
+import {users, user_login} from '../dtos/users.dto'
 import Model from "./model";
 
 class User extends Model {

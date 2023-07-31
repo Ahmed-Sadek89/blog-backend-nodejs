@@ -1,6 +1,6 @@
 import { Router } from "express";
 import bodyParser from "body-parser";
-import {getAllUsers, login, rejester} from '../controllers/users.controller';
+import {getAllUsers, login, rejester} from '../controllers/users.controller'
 
 const router= Router();
 const b_parser = bodyParser.urlencoded({extended: true})
