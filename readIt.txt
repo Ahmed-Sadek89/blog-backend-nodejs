@@ -1,0 +1,14 @@
+npm i -D typescript @types/node ts-node
+
+npm i express
+npm i -D typescript @types/express
+
+npm i -D typescript nodemon
+
+npx tsc --init
+
+
+DTOs -> data transfare objects
+
+npm i --save-dev @types/mysql
+npm i mysql
