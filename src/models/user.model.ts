@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt'
 import {users, user_login} from '../dtos/users.dto'
 import Model from "./model";
 

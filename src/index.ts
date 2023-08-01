@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { Express } from 'express-serve-static-core';
-import User from './models/user.model';
+import * as dotEnv from 'dotenv';
 import userRoutes from './routes/users.routes';
 
 
@@ -17,6 +17,8 @@ class Server {
 
     private config() {
         this.app.use(express.json())
+        dotEnv.config();
+        
     }
 
     private routes() {
