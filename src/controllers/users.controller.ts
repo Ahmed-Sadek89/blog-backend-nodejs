@@ -6,18 +6,34 @@ const user = new User();
 
 export const getAllUsers = async (req: Request, res: Response) => {
     await user.getAllUsers()
-    .then(result => {
-        res.status(200).json({
-            status: 200,
-            result
+        .then(result => {
+            res.status(200).json({
+                status: 200,
+                result
+            })
         })
-    })
-    .catch(e => {
-        res.status(404).json({
-            status: 404,
-            result: e
+        .catch(e => {
+            res.status(404).json({
+                status: 404,
+                result: e
+            })
         })
-    })
+}
+export const getuserById = async (req: Request, res: Response) => {
+    const { id } = req.params
+    await user.getUserByParam({ id })
+        .then(result => {
+            res.status(200).json({
+                status: 200,
+                result
+            })
+        })
+        .catch(e => {
+            res.status(404).json({
+                status: 404,
+                result: e
+            })
+        })
 }
 
 export const rejester = async (req: Request, res: Response) => {
@@ -53,4 +69,22 @@ export const login = async (req: Request, res: Response) => {
             })
         })
 }
+
+// export const updateUserById = async (req: Request, res: Response) => {
+//     const body = req.body;
+//     const {id} = req.params
+//     await user.updateUserById(body, id)
+//     .then((result) => {
+//         res.status(200).json({
+//             status: 200,
+//             result
+//         })
+//     })
+//     .catch(e => {
+//         res.status(400).json({
+//             status: 404,
+//             result: e
+//         })
+//     })
+// }
 

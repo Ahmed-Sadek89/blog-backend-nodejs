@@ -15,6 +15,7 @@ const config = {
     host: process.env.HOST,
     database: process.env.DB_NAME,
 };
+
 const connection = mysql.createConnection({
     ...config 
 });

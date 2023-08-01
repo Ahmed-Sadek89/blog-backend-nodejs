@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.rejester = exports.getAllUsers = void 0;
+exports.login = exports.rejester = exports.getuserById = exports.getAllUsers = void 0;
 const user_model_1 = __importDefault(require("../models/user.model"));
 const user = new user_model_1.default();
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -31,6 +31,23 @@ const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     });
 });
 exports.getAllUsers = getAllUsers;
+const getuserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    yield user.getUserByParam({ id })
+        .then(result => {
+        res.status(200).json({
+            status: 200,
+            result
+        });
+    })
+        .catch(e => {
+        res.status(404).json({
+            status: 404,
+            result: e
+        });
+    });
+});
+exports.getuserById = getuserById;
 const rejester = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let { username, email, password, image } = req.body;
     yield user.register({ username, email, password, image })
@@ -65,3 +82,20 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.login = login;
+// export const updateUserById = async (req: Request, res: Response) => {
+//     const body = req.body;
+//     const {id} = req.params
+//     await user.updateUserById(body, id)
+//     .then((result) => {
+//         res.status(200).json({
+//             status: 200,
+//             result
+//         })
+//     })
+//     .catch(e => {
+//         res.status(400).json({
+//             status: 404,
+//             result: e
+//         })
+//     })
+// }
