@@ -26,33 +26,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
+exports.verifyToken = void 0;
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotEnv = __importStar(require("dotenv"));
-const users_routes_1 = __importDefault(require("./routes/users.routes"));
-class Server {
-    constructor() {
-        this.app = (0, express_1.default)();
-        this.PORT = process.env.PORT || 4000;
-        this.config();
-        this.routes();
-        this.listen();
-    }
-    config() {
-        this.app.use(express_1.default.json());
-        dotEnv.config();
-    }
-    routes() {
-        this.app.get('/', (req, res) => {
-            res.json({
-                status: 200,
-                message: "welcome in ts RESTapi"
-            });
+dotEnv.config();
+const verifyToken = (req, res, next) => {
+    var _a;
+    const token = (_a = req.headers) === null || _a === void 0 ? void 0 : _a.authorization;
+    const secretKey = process.env.JWT_SECRET_KEY || "";
+    if (!token) {
+        return res.status(401).json({
+            status: 404,
+            result: "No token provided."
         });
-        this.app.use('/api/users', users_routes_1.default);
     }
-    listen() {
-        const port = this.PORT;
-        this.app.listen(port, () => console.log(`SERVER IS WORKED ON PORT ${port}`));
+    else {
+        jsonwebtoken_1.default.verify(token, secretKey, (error, decoded) => {
+            if (error) {
+                res.status(404).json({
+                    status: 404,
+                    result: "you are unauthorized !",
+                });
+            }
+            else {
+                // console.log({ tokenRes: decoded })
+                next();
+            }
+        });
     }
-}
-new Server();
+};
+exports.verifyToken = verifyToken;

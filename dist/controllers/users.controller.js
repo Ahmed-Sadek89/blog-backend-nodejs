@@ -12,14 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.rejester = exports.getuserById = exports.getAllUsers = void 0;
+exports.deleteUserById = exports.updateUserById = exports.login = exports.rejester = exports.getuserById = exports.getAllUsers = void 0;
 const user_model_1 = __importDefault(require("../models/user.model"));
+const createToken_1 = require("../config/createToken");
 const user = new user_model_1.default();
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield user.getAllUsers()
-        .then(result => {
+        .then((result) => {
         res.status(200).json({
             status: 200,
+            count: result.length,
             result
         });
     })
@@ -67,11 +69,13 @@ const rejester = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.rejester = rejester;
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let { email, password } = req.body;
+    const token = (0, createToken_1.createToken)({ email, password });
     yield user.login({ email, password })
         .then((result) => {
         res.status(200).json({
             status: 200,
-            result
+            result,
+            token
         });
     })
         .catch(e => {
@@ -82,20 +86,38 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.login = login;
-// export const updateUserById = async (req: Request, res: Response) => {
-//     const body = req.body;
-//     const {id} = req.params
-//     await user.updateUserById(body, id)
-//     .then((result) => {
-//         res.status(200).json({
-//             status: 200,
-//             result
-//         })
-//     })
-//     .catch(e => {
-//         res.status(400).json({
-//             status: 404,
-//             result: e
-//         })
-//     })
-// }
+const updateUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const body = req.body;
+    const { id } = req.params;
+    yield user.updateUser(body, { id })
+        .then((result) => {
+        res.status(200).json({
+            status: 200,
+            result
+        });
+    })
+        .catch((error) => {
+        res.status(400).json({
+            status: 404,
+            result: error
+        });
+    });
+});
+exports.updateUserById = updateUserById;
+const deleteUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    yield user.deleteUser({ id })
+        .then((result) => {
+        res.status(200).json({
+            status: 200,
+            result
+        });
+    })
+        .catch((error) => {
+        res.status(400).json({
+            status: 404,
+            result: error
+        });
+    });
+});
+exports.deleteUserById = deleteUserById;
