@@ -1,5 +1,6 @@
+import { error } from 'console';
 import connection from '../config/database';
-import { sql_props, sql_return } from '../dtos/sql.dto';
+import { sql_set_props, sql_set_return, sql_where_props, sql_where_return } from '../dtos/sql.dto';
 
 
 
@@ -7,51 +8,67 @@ class Model {
 
     constructor(protected modelName: string) { }
 
-    private SQLSet(props: sql_props): sql_return {
-        let { command, object } = props
-        let values: (string | number)[] = []
-        if (object !== null) {
-            for (let key in object) {
-                let value = object[key]
-                command += `${key},`
-                values.push(value)
+    private SQLSet(props: sql_set_props): sql_set_return {
+        let { setCommand, setObject } = props
+        let setValues: (string | number)[] = []
+        if (setObject !== null) {
+            for (let key in setObject) {
+                let value = setObject[key]
+                setCommand += `${key},`
+                setValues.push(value)
             }
-            command = command.slice(0, -1);
-            command += `) values (?)`
+            setCommand = setCommand.slice(0, -1);
+            setCommand += `) values (?)`
         }
         return {
-            command,
-            values
+            setCommand,
+            setValues
         }
     }
 
-    private SQLWhere(props: sql_props): sql_return {
-        let { command, object } = props
-        let values: (string | number)[] = []
-        if (object !== null) {
+    private SQLWhere(props: sql_where_props): sql_where_return {
+        let { whereCommand, whereObject } = props
+        let whereValues: (string | number)[] = []
+        if (whereObject !== null) {
 
-            //SELECT * FROM users WHERE id = ? AND email = ?
-            for (let key in object) {
-                let value = object[key]
-                command += `${key}=? and `
-                values.push(value)
+            for (let key in whereObject) {
+                let value = whereObject[key]
+                whereCommand += `${key}=? and `
+                whereValues.push(value)
             }
-            command = command.slice(0, -5);
+            whereCommand = whereCommand.slice(0, -5);
         }
         return {
-            command,
-            values
+            whereCommand,
+            whereValues
+        }
+    }
+
+    private SQLUpdateSet(props: sql_set_props): sql_set_return {
+        let { setCommand, setObject } = props
+        let setValues: (string | number)[] = []
+        if (setObject !== null) {
+            for (let key in setObject) {
+                let value = setObject[key]
+                setCommand += `${key}= ?,`
+                setValues.push(value)
+            }
+            setCommand = setCommand.slice(0, -1);
+        }
+        return {
+            setCommand,
+            setValues
         }
     }
 
     protected insert(params: { [x: string]: string | number }) {
         //make sql command and its keys 
         let sql = `insert into ${this.modelName} (`;
-        const { command, values } = this.SQLSet({command: sql, object: params })
+        const { setCommand, setValues } = this.SQLSet({ setCommand: sql, setObject: params })
 
         // make the query
         return new Promise((resolve, reject) => {
-            connection.query(command, [values], (error, data) => {
+            connection.query(setCommand, [setValues], (error, data) => {
                 if (error) {
                     reject(error.message)
                 } else {
@@ -68,7 +85,18 @@ class Model {
                 if (error) {
                     reject(error.message)
                 } else {
-                    resolve(data)
+                    if (data.length > 0) {
+                        let result: any[] = []
+                        let rowObject: any = {}
+                        data.forEach((RowDataPacket: any) => {
+                            for (let key in RowDataPacket) {
+                                rowObject[key] = RowDataPacket[key];
+                            }
+                            result.push(rowObject)
+                            rowObject = {}
+                        });
+                        resolve(result)
+                    }
                 }
             })
         })
@@ -76,20 +104,20 @@ class Model {
 
     protected readByParams(params: { [x: string]: string | number }) {
         const sql = `select * from ${this.modelName} where `;
-        const { command, values } = this.SQLWhere({command: sql, object: params});
+        const { whereCommand, whereValues } = this.SQLWhere({ whereCommand: sql, whereObject: params });
         return new Promise((resolve, reject) => {
-            connection.query(command, [values], (error, data) => {
+            connection.query(whereCommand, [whereValues], (error, data) => {
                 if (error) {
                     reject(error.message)
                 } else {
-                    if (data.length > 0){
+                    if (data.length > 0) {
                         const rowObject: { [key: string]: any } = {};
                         data.forEach((rowPacket: any) => {
-                          
-                          for (let key in rowPacket) {
-                            rowObject[key] = rowPacket[key];
-                          }
-                      
+
+                            for (let key in rowPacket) {
+                                rowObject[key] = rowPacket[key];
+                            }
+
                         });
                         resolve(rowObject)
                     } else {
@@ -100,12 +128,34 @@ class Model {
         })
     }
 
-    protected update() {
-
+    protected update(paramsSet: { [x: string]: string | number }, paramsWhere: { [x: string]: string | number }) {
+        let sqlSet = `update ${this.modelName} set `
+        let { setCommand, setValues } = this.SQLUpdateSet({ setCommand: sqlSet, setObject: paramsSet });
+        let { whereCommand, whereValues } = this.SQLWhere({ whereCommand: `${setCommand} where `, whereObject: paramsWhere });
+        const sql = whereCommand;
+        // console.log({sql, setValues, whereValues})
+        return new Promise((resolve, reject) => {
+            connection.query(sql, [...setValues, ...whereValues], (error, data) => {
+                if (error) {
+                    reject(error)
+                } else {
+                    resolve(data)
+                }
+            })
+        })
     }
 
-    protected delete() {
-
+    protected delete(params: { [x: string]: string | number }) {
+        const sql = `delete from ${this.modelName} where `;
+        const { whereCommand, whereValues } = this.SQLWhere({ whereCommand: sql, whereObject: params });
+        return new Promise((resolve, reject) => {
+            connection.query(whereCommand, [...whereValues], (error, data) => {
+                if (error) {
+                    reject(error)
+                }
+                resolve(data)
+            })
+        })
     }
 }
 
