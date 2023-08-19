@@ -25,10 +25,11 @@ export const getAllUsers = async (req: Request, res: Response) => {
 export const getuserById = async (req: Request, res: Response) => {
     const { id } = req.params
     await user.getUserByParam({ id })
-        .then(result => {
+        .then((result: any) => {
+            const {password, ...others} = result
             res.status(200).json({
                 status: 200,
-                result
+                result: others
             })
         })
         .catch(e => {
@@ -40,7 +41,9 @@ export const getuserById = async (req: Request, res: Response) => {
 }
 
 export const rejester = async (req: Request, res: Response) => {
-    let { username, email, password, image } = req.body as users;
+    let { username, email, password } = req.body as users;
+    let image = req.file?.path
+    console.log({image: req.file?.path})
     await user.register({ username, email, password, image })
         .then(() => {
             res.status(200).json({
@@ -76,9 +79,10 @@ export const login = async (req: Request, res: Response) => {
 }
 
 export const updateUserById = async (req: Request, res: Response) => {
-    const body = req.body;
+    const { username, email, password } = req.body;
+    const image = req.file?.path
     const { id } = req.params;
-    await user.updateUser(body, { id })
+    await user.updateUser({ username, email, password, image }, { id })
         .then((result) => {
             res.status(200).json({
                 status: 200,

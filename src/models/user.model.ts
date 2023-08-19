@@ -25,12 +25,11 @@ class User extends Model {
         })
     }
 
-    public getUserByParam(params: { [x: string]: string | number }) {
+    public getUserByParam(params: { [x: string]: string | number| undefined }) {
         return new Promise((resolve, reject) => {
             this.readByParams(params)
             .then((result: any) => {
-                let { password, ...others } = result;
-                resolve(others)
+                resolve(result)
             })
             .catch(error => {
                 reject(error)
@@ -52,7 +51,7 @@ class User extends Model {
         const { email, password } = login_data;
         return new Promise((resolve, reject) => {
             this.getUserByParam({ email })
-                .then((res) => {
+                .then((res: any) => {
                     if (!res) {
                         reject('email is not found')
                     }
@@ -65,14 +64,14 @@ class User extends Model {
                         reject('incorrect password')
                     }
                 })
-                .catch(() => {
-                    reject('email is not found')
+                .catch((e) => {
+                    reject('email is not found');
                 })
 
         })
     }
 
-    public async updateUser({ username, email, password, image }: users, { id }: { [x: string]: string | number }) {
+    public async updateUser({ username, email, password, image }: users, { id }: { [x: string]: string | undefined | number }) {
         return new Promise((resolve, reject) => {
             this.getUserByParam({ id })
                 .then((res) => {

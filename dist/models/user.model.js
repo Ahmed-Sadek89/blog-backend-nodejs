@@ -49,8 +49,7 @@ class User extends model_1.default {
         return new Promise((resolve, reject) => {
             this.readByParams(params)
                 .then((result) => {
-                let { password } = result, others = __rest(result, ["password"]);
-                resolve(others);
+                resolve(result);
             })
                 .catch(error => {
                 reject(error);
@@ -84,7 +83,7 @@ class User extends model_1.default {
                         reject('incorrect password');
                     }
                 })
-                    .catch(() => {
+                    .catch((e) => {
                     reject('email is not found');
                 });
             });

@@ -2,7 +2,7 @@ export interface users{
     username: string,
     email: string, 
     password: string, 
-    image: string
+    image: string| undefined
 }
 
 export interface user_login{

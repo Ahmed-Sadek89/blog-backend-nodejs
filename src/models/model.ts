@@ -1,4 +1,3 @@
-import { error } from 'console';
 import connection from '../config/database';
 import { sql_set_props, sql_set_return, sql_where_props, sql_where_return } from '../dtos/sql.dto';
 
@@ -10,7 +9,7 @@ class Model {
 
     private SQLSet(props: sql_set_props): sql_set_return {
         let { setCommand, setObject } = props
-        let setValues: (string | number)[] = []
+        let setValues: (string | number| undefined)[] = []
         if (setObject !== null) {
             for (let key in setObject) {
                 let value = setObject[key]
@@ -28,7 +27,7 @@ class Model {
 
     private SQLWhere(props: sql_where_props): sql_where_return {
         let { whereCommand, whereObject } = props
-        let whereValues: (string | number)[] = []
+        let whereValues: (string | number| undefined)[] = []
         if (whereObject !== null) {
 
             for (let key in whereObject) {
@@ -46,7 +45,7 @@ class Model {
 
     private SQLUpdateSet(props: sql_set_props): sql_set_return {
         let { setCommand, setObject } = props
-        let setValues: (string | number)[] = []
+        let setValues: (string | number| undefined)[] = []
         if (setObject !== null) {
             for (let key in setObject) {
                 let value = setObject[key]
@@ -61,7 +60,7 @@ class Model {
         }
     }
 
-    protected insert(params: { [x: string]: string | number }) {
+    protected insert(params: { [x: string]: string | number | undefined }) {
         //make sql command and its keys 
         let sql = `insert into ${this.modelName} (`;
         const { setCommand, setValues } = this.SQLSet({ setCommand: sql, setObject: params })
@@ -102,7 +101,7 @@ class Model {
         })
     }
 
-    protected readByParams(params: { [x: string]: string | number }) {
+    protected readByParams(params: { [x: string]: string | number | undefined }) {
         const sql = `select * from ${this.modelName} where `;
         const { whereCommand, whereValues } = this.SQLWhere({ whereCommand: sql, whereObject: params });
         return new Promise((resolve, reject) => {
@@ -128,7 +127,7 @@ class Model {
         })
     }
 
-    protected update(paramsSet: { [x: string]: string | number }, paramsWhere: { [x: string]: string | number }) {
+    protected update(paramsSet: { [x: string]: string | number | undefined }, paramsWhere: { [x: string]: string | number | undefined }) {
         let sqlSet = `update ${this.modelName} set `
         let { setCommand, setValues } = this.SQLUpdateSet({ setCommand: sqlSet, setObject: paramsSet });
         let { whereCommand, whereValues } = this.SQLWhere({ whereCommand: `${setCommand} where `, whereObject: paramsWhere });
@@ -145,7 +144,7 @@ class Model {
         })
     }
 
-    protected delete(params: { [x: string]: string | number }) {
+    protected delete(params: { [x: string]: string | number | undefined }) {
         const sql = `delete from ${this.modelName} where `;
         const { whereCommand, whereValues } = this.SQLWhere({ whereCommand: sql, whereObject: params });
         return new Promise((resolve, reject) => {

@@ -8,6 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -36,10 +47,11 @@ exports.getAllUsers = getAllUsers;
 const getuserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     yield user.getUserByParam({ id })
-        .then(result => {
+        .then((result) => {
+        const { password } = result, others = __rest(result, ["password"]);
         res.status(200).json({
             status: 200,
-            result
+            result: others
         });
     })
         .catch(e => {
@@ -51,7 +63,10 @@ const getuserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.getuserById = getuserById;
 const rejester = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let { username, email, password, image } = req.body;
+    var _a, _b;
+    let { username, email, password } = req.body;
+    let image = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
+    console.log({ image: (_b = req.file) === null || _b === void 0 ? void 0 : _b.path });
     yield user.register({ username, email, password, image })
         .then(() => {
         res.status(200).json({
@@ -87,9 +102,11 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.login = login;
 const updateUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const body = req.body;
+    var _c;
+    const { username, email, password } = req.body;
+    const image = (_c = req.file) === null || _c === void 0 ? void 0 : _c.path;
     const { id } = req.params;
-    yield user.updateUser(body, { id })
+    yield user.updateUser({ username, email, password, image }, { id })
         .then((result) => {
         res.status(200).json({
             status: 200,
