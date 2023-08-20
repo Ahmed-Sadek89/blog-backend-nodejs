@@ -10,30 +10,30 @@ class User extends Model {
     public getAllUsers() {
         return new Promise((resolve, reject) => {
             this.read()
-            .then((result: any) => {
-                let data: users_info[] = []
-                result.map((index: users_info) => {
-                    let { password, ...others } = index;
-                    data.push(others)
+                .then((result: any) => {
+                    let data: users_info[] = []
+                    result.map((index: users_info) => {
+                        let { password, ...others } = index;
+                        data.push(others)
+                    })
+                    resolve(data)
                 })
-                resolve(data)
-            })
-            .catch(error => {
-                reject(error)
-            })
+                .catch(error => {
+                    reject(error)
+                })
 
         })
     }
 
-    public getUserByParam(params: { [x: string]: string | number| undefined }) {
+    public getUserByParam(params: { [x: string]: string | number | undefined }) {
         return new Promise((resolve, reject) => {
             this.readByParams(params)
-            .then((result: any) => {
-                resolve(result)
-            })
-            .catch(error => {
-                reject(error)
-            })
+                .then((result: any) => {
+                    resolve(result)
+                })
+                .catch(error => {
+                    reject(error)
+                })
 
         })
     }
@@ -45,6 +45,7 @@ class User extends Model {
             username, email, password: hashedPassword, image
         })
         return payload
+       
     }
 
     public async login(login_data: user_login) {
@@ -77,8 +78,8 @@ class User extends Model {
                 .then((res) => {
                     if (!res) {
                         reject(`user number ${id} is not found`)
-                    } 
-                        return res as users
+                    }
+                    return res as users
                 })
                 .then(async (res) => {
                     const hashedPassword = bcrypt.hashSync(password, 10);
@@ -108,8 +109,8 @@ class User extends Model {
                 .then((res) => {
                     if (!res) {
                         reject(`user number ${id} is not found`)
-                    } 
-                        return res as users
+                    }
+                    return res as users
                 })
                 .then(async (res) => {
                     await this.delete({ id })

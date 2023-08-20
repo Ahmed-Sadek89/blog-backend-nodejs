@@ -22,40 +22,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const cors_1 = __importDefault(require("cors"));
+exports.corsOptions = void 0;
 const dotEnv = __importStar(require("dotenv"));
-const users_routes_1 = __importDefault(require("./routes/users.routes"));
-const cors_2 = require("./config/cors");
-class Server {
-    constructor() {
-        this.app = (0, express_1.default)();
-        this.PORT = process.env.PORT || 4000;
-        this.config();
-        this.routes();
-        this.listen();
-    }
-    config() {
-        this.app.use((0, cors_1.default)(cors_2.corsOptions));
-        this.app.use(express_1.default.json());
-        dotEnv.config();
-    }
-    routes() {
-        this.app.get('/', (req, res) => {
-            res.json({
-                status: 200,
-                message: "welcome in ts RESTapi"
-            });
-        });
-        this.app.use('/api/users', users_routes_1.default);
-    }
-    listen() {
-        const port = this.PORT;
-        this.app.listen(port, () => console.log(`SERVER IS WORKED ON PORT ${port}`));
-    }
-}
-new Server();
+dotEnv.config();
+const origin = process.env.FRONT_END_LINK;
+exports.corsOptions = {
+    origin,
+    optionsSuccessStatus: 200
+};

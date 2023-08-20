@@ -42,8 +42,7 @@ export const getuserById = async (req: Request, res: Response) => {
 
 export const rejester = async (req: Request, res: Response) => {
     let { username, email, password } = req.body as users;
-    let image = req.file?.path
-    console.log({image: req.file?.path})
+    let image = req.file?.path 
     await user.register({ username, email, password, image })
         .then(() => {
             res.status(200).json({

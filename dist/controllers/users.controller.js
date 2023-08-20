@@ -63,10 +63,9 @@ const getuserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.getuserById = getuserById;
 const rejester = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a;
     let { username, email, password } = req.body;
     let image = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
-    console.log({ image: (_b = req.file) === null || _b === void 0 ? void 0 : _b.path });
     yield user.register({ username, email, password, image })
         .then(() => {
         res.status(200).json({
@@ -102,9 +101,9 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.login = login;
 const updateUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c;
+    var _b;
     const { username, email, password } = req.body;
-    const image = (_c = req.file) === null || _c === void 0 ? void 0 : _c.path;
+    const image = (_b = req.file) === null || _b === void 0 ? void 0 : _b.path;
     const { id } = req.params;
     yield user.updateUser({ username, email, password, image }, { id })
         .then((result) => {

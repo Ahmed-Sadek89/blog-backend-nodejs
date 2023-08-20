@@ -12,3 +12,6 @@ DTOs -> data transfare objects
 
 npm i --save-dev @types/mysql
 npm i mysql
+
+
+MULTER -> make your directory folder then code it!

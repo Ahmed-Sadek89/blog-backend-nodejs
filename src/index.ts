@@ -1,7 +1,9 @@
 import express, { Request, Response } from 'express';
 import { Express } from 'express-serve-static-core';
+import cors from 'cors';
 import * as dotEnv from 'dotenv';
 import userRoutes from './routes/users.routes';
+import { corsOptions } from './config/cors';
 
 
 class Server {
@@ -16,9 +18,11 @@ class Server {
     }
 
     private config() {
+       
+        this.app.use(cors(corsOptions))
+
         this.app.use(express.json())
         dotEnv.config();
-
     }
 
     private routes() {

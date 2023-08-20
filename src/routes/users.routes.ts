@@ -2,7 +2,7 @@ import { Router } from "express";
 import bodyParser from "body-parser";
 import { getAllUsers, login, rejester, getuserById, updateUserById, deleteUserById } from '../controllers/users.controller'
 import { verifyToken } from "../middleware/verifyToken.middleware";
-import { usersUpload } from "../config/multer/multerUpload";
+import { usersUpload } from "../config/multerUpload";
 
 const router = Router();
 const b_parser = bodyParser.urlencoded({ extended: true })
