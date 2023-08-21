@@ -95,6 +95,8 @@ class Model {
                             rowObject = {}
                         });
                         resolve(result)
+                    } else {
+                        reject([])
                     }
                 }
             })

@@ -30,6 +30,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotEnv = __importStar(require("dotenv"));
 const users_routes_1 = __importDefault(require("./routes/users.routes"));
+const categories_routes_1 = __importDefault(require("./routes/categories.routes"));
 const cors_2 = require("./config/cors");
 class Server {
     constructor() {
@@ -51,7 +52,12 @@ class Server {
                 message: "welcome in ts RESTapi"
             });
         });
+        // users
         this.app.use('/api/users', users_routes_1.default);
+        // categories
+        this.app.use('/api/categories', categories_routes_1.default);
+        // posts
+        // this.app.use('/api/posts', postsRoutes)
     }
     listen() {
         const port = this.PORT;

@@ -93,6 +93,9 @@ class Model {
                         });
                         resolve(result);
                     }
+                    else {
+                        reject([]);
+                    }
                 }
             });
         });

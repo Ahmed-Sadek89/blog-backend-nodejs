@@ -3,6 +3,7 @@ import { Express } from 'express-serve-static-core';
 import cors from 'cors';
 import * as dotEnv from 'dotenv';
 import userRoutes from './routes/users.routes';
+import cateoriesRoutes from './routes/categories.routes';
 import { corsOptions } from './config/cors';
 
 
@@ -32,7 +33,12 @@ class Server {
                 message: "welcome in ts RESTapi"
             })
         });
+        // users
         this.app.use('/api/users', userRoutes)
+        // categories
+        this.app.use('/api/categories', cateoriesRoutes)
+        // posts
+        // this.app.use('/api/posts', postsRoutes)
     }
 
     private listen() {

@@ -83,7 +83,7 @@ const rejester = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.rejester = rejester;
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let { email, password } = req.body;
-    const token = (0, createToken_1.createToken)({ email, password });
+    const token = (0, createToken_1.createToken)({ email });
     yield user.login({ email, password })
         .then((result) => {
         res.status(200).json({

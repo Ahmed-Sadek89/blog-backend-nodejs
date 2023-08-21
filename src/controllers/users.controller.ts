@@ -60,7 +60,7 @@ export const rejester = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
     let { email, password } = req.body as users;
-    const token = createToken({ email, password });
+    const token = createToken({ email });
     await user.login({ email, password })
         .then((result) => {
             res.status(200).json({
