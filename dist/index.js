@@ -31,6 +31,7 @@ const cors_1 = __importDefault(require("cors"));
 const dotEnv = __importStar(require("dotenv"));
 const users_routes_1 = __importDefault(require("./routes/users.routes"));
 const categories_routes_1 = __importDefault(require("./routes/categories.routes"));
+const posts_routes_1 = __importDefault(require("./routes/posts.routes"));
 const cors_2 = require("./config/cors");
 class Server {
     constructor() {
@@ -56,8 +57,10 @@ class Server {
         this.app.use('/api/users', users_routes_1.default);
         // categories
         this.app.use('/api/categories', categories_routes_1.default);
-        // posts
-        // this.app.use('/api/posts', postsRoutes)
+        // posts.
+        this.app.use('/api/posts', posts_routes_1.default);
+        // make model for posts 
+        // get posts example from here https://www.social-searcher.com/
     }
     listen() {
         const port = this.PORT;
@@ -65,3 +68,6 @@ class Server {
     }
 }
 new Server();
+// new Posts().addNewPost({title: 'title1', description: 'desc1', image: 'img1', category_id: 12, user_id: 2})
+// .then(res => console.log(res))
+// .catch(error => console.log('error'))

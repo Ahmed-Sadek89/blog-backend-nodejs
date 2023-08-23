@@ -4,7 +4,9 @@ import cors from 'cors';
 import * as dotEnv from 'dotenv';
 import userRoutes from './routes/users.routes';
 import cateoriesRoutes from './routes/categories.routes';
+import postsRoutes from './routes/posts.routes';
 import { corsOptions } from './config/cors';
+import Posts from './models/posts.model';
 
 
 class Server {
@@ -37,8 +39,11 @@ class Server {
         this.app.use('/api/users', userRoutes)
         // categories
         this.app.use('/api/categories', cateoriesRoutes)
-        // posts
-        // this.app.use('/api/posts', postsRoutes)
+        // posts.
+        this.app.use('/api/posts', postsRoutes)
+
+        // make model for posts 
+        // get posts example from here https://www.social-searcher.com/
     }
 
     private listen() {
@@ -48,3 +53,7 @@ class Server {
 }
 
 new Server();
+
+// new Posts().addNewPost({title: 'title1', description: 'desc1', image: 'img1', category_id: 12, user_id: 2})
+// .then(res => console.log(res))
+// .catch(error => console.log('error'))

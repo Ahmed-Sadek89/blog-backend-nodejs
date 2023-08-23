@@ -9,3 +9,12 @@ export const usersUpload = multer({
     },
     fileFilter: fileFilter
 });
+
+const postsStorage = multerStorage('posts')
+export const postsUpload = multer({
+    storage: postsStorage,
+    limits: {
+        fileSize: 1024 * 1024 * 5
+    },
+    fileFilter: fileFilter
+});
