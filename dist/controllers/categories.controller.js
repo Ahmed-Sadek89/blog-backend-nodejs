@@ -87,14 +87,12 @@ const updateCategoryById = (req, res) => __awaiter(void 0, void 0, void 0, funct
     const { id } = req.params;
     yield category.updateCategoryById({ cat_name }, { id })
         .then((result) => {
-        console.log({ result });
         res.status(200).json({
             status: 200,
             result
         });
     })
         .catch((error) => {
-        console.log({ error });
         res.status(400).json({
             status: 400,
             result: error

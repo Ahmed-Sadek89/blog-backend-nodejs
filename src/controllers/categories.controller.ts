@@ -77,14 +77,12 @@ export const updateCategoryById = async (req: Request, res: Response) => {
     const { id } = req.params
     await category.updateCategoryById({ cat_name }, {id})
     .then((result) => {
-        console.log({result})
         res.status(200).json({
             status: 200,
             result
         })
     })
     .catch((error) => {
-        console.log({error})
         res.status(400).json({
             status: 400,
             result: error

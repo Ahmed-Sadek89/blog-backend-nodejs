@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __rest = (this && this.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
@@ -16,6 +39,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("../config/database"));
 const model_1 = __importDefault(require("./model"));
+const dotEnv = __importStar(require("dotenv"));
+dotEnv.config();
 class Posts extends model_1.default {
     constructor() {
         super('posts');
@@ -37,25 +62,25 @@ class Posts extends model_1.default {
         return emptyProperties.toString();
     }
     addNewPost(post) {
-        const { title, description, image, category_id, user_id } = post;
+        const { title, description, post_image, category_id, user_id } = post;
         const emptyProperties = this.validation(post);
         return new Promise((resolve, reject) => {
             if (emptyProperties.length > 0) {
                 reject(`proprety ${emptyProperties} is requried`);
             }
             else {
-                this.insert({ title, description, image, category_id, user_id })
+                this.insert({ title, description, post_image, category_id, user_id })
                     .then(() => {
                     resolve(`new post inserted successfully`);
                 })
-                    .catch(() => {
+                    .catch((error) => {
                     reject(`new post did not insert!`);
                 });
             }
         });
     }
     updatePostById(body, params) {
-        const { title, description, image, category_id } = body;
+        const { title, description, post_image, category_id } = body;
         const { id } = params;
         const emptyProperties = this.validation(body);
         return new Promise((resolve, reject) => {
@@ -63,7 +88,7 @@ class Posts extends model_1.default {
                 reject(`proprety ${emptyProperties} is requried`);
             }
             else {
-                this.update({ title, description, image, category_id }, { id })
+                this.update({ title, description, post_image, category_id }, { id })
                     .then(() => {
                     resolve(`post number ${id} updated successfully`);
                 })
@@ -87,15 +112,6 @@ class Posts extends model_1.default {
     }
     getPostByPostId(params) {
         const { id } = params;
-        // return new Promise((resolve, reject) => {
-        //     this.readByParams({ id })
-        //         .then((result) => {
-        //             resolve(result)
-        //         })
-        //         .catch((error) => {
-        //             reject(error)
-        //         })
-        // })
         return new Promise((resolve, reject) => {
             database_1.default.query(`select 
                     posts.id, posts.title, posts.description, posts.post_image, 
@@ -113,7 +129,11 @@ class Posts extends model_1.default {
                         let modifiedData = [];
                         data.map((index) => {
                             let { username, email, image } = index, others = __rest(index, ["username", "email", "image"]);
-                            modifiedData.push(Object.assign(Object.assign({}, others), { user: { username, email, image } }));
+                            let thisUserImage = image.split('\\');
+                            let userImage = `${process.env.BACK_END_IMAGE_LINK}/${thisUserImage[2]}/${thisUserImage[3]}`;
+                            let thisImg = index.post_image.split('\\');
+                            let post_image = `${process.env.BACK_END_IMAGE_LINK}/${thisImg[2]}/${thisImg[3]}`;
+                            modifiedData.push(Object.assign(Object.assign({}, others), { post_image, user: { username, email, image: userImage } }));
                         });
                         resolve(modifiedData[0]);
                     }
@@ -142,7 +162,11 @@ class Posts extends model_1.default {
                         let modifiedData = [];
                         data.map((index) => {
                             let { username, email, image } = index, others = __rest(index, ["username", "email", "image"]);
-                            modifiedData.push(Object.assign(Object.assign({}, others), { user: { username, email, image } }));
+                            let thisUserImage = image.split('\\');
+                            let userImage = `${process.env.BACK_END_IMAGE_LINK}/${thisUserImage[2]}/${thisUserImage[3]}`;
+                            let thisImg = index.post_image.split('\\');
+                            let post_image = `${process.env.BACK_END_IMAGE_LINK}/${thisImg[2]}/${thisImg[3]}`;
+                            modifiedData.push(Object.assign(Object.assign({}, others), { post_image, user: { username, email, image: userImage } }));
                         });
                         resolve(modifiedData);
                     }
@@ -172,7 +196,11 @@ class Posts extends model_1.default {
                         let modifiedData = [];
                         data.map((index) => {
                             let { username, email, image } = index, others = __rest(index, ["username", "email", "image"]);
-                            modifiedData.push(Object.assign(Object.assign({}, others), { user: { username, email, image } }));
+                            let thisUserImage = image.split('\\');
+                            let userImage = `${process.env.BACK_END_IMAGE_LINK}/${thisUserImage[2]}/${thisUserImage[3]}`;
+                            let thisImg = index.post_image.split('\\');
+                            let post_image = `${process.env.BACK_END_IMAGE_LINK}/${thisImg[2]}/${thisImg[3]}`;
+                            modifiedData.push(Object.assign(Object.assign({}, others), { post_image, user: { username, email, image: userImage } }));
                         });
                         resolve(modifiedData);
                     }

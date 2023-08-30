@@ -6,7 +6,6 @@ import userRoutes from './routes/users.routes';
 import cateoriesRoutes from './routes/categories.routes';
 import postsRoutes from './routes/posts.routes';
 import { corsOptions } from './config/cors';
-import Posts from './models/posts.model';
 
 
 class Server {
@@ -25,6 +24,7 @@ class Server {
         this.app.use(cors(corsOptions))
 
         this.app.use(express.json())
+        this.app.use(express.static('src/uploads'))
         dotEnv.config();
     }
 

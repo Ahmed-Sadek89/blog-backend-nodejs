@@ -18,8 +18,8 @@ const post = new posts_model_1.default();
 const addNewPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { title, description, category_id, user_id } = req.body;
-    let image = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
-    yield post.addNewPost({ title, description, image, category_id, user_id })
+    let post_image = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
+    yield post.addNewPost({ title, description, post_image: post_image, category_id, user_id })
         .then(result => {
         res.status(200).json({
             status: 200,
@@ -37,9 +37,9 @@ exports.addNewPost = addNewPost;
 const updatePostById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     const { title, description, category_id } = req.body;
-    let image = (_b = req.file) === null || _b === void 0 ? void 0 : _b.path;
+    let post_image = (_b = req.file) === null || _b === void 0 ? void 0 : _b.path;
     let { id } = req.params;
-    yield post.updatePostById({ title, description, image, category_id }, { id })
+    yield post.updatePostById({ title, description, post_image, category_id }, { id })
         .then(result => {
         res.status(200).json({
             status: 200,

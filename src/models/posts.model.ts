@@ -1,6 +1,8 @@
 import connection from "../config/database";
 import { posts, postsByUser } from "../dtos/posts.dto";
 import Model from "./model";
+import * as dotEnv from 'dotenv';
+dotEnv.config();
 
 class Posts extends Model {
 
@@ -28,17 +30,17 @@ class Posts extends Model {
     }
 
     public addNewPost(post: posts) {
-        const { title, description, image, category_id, user_id } = post;
+        const { title, description, post_image, category_id, user_id } = post;
         const emptyProperties = this.validation(post);
         return new Promise((resolve, reject) => {
             if (emptyProperties.length > 0) {
                 reject(`proprety ${emptyProperties} is requried`)
             } else {
-                this.insert({ title, description, image, category_id, user_id })
+                this.insert({ title, description, post_image, category_id, user_id })
                     .then(() => {
                         resolve(`new post inserted successfully`)
                     })
-                    .catch(() => {
+                    .catch((error) => {
                         reject(`new post did not insert!`)
                     })
             }
@@ -46,14 +48,14 @@ class Posts extends Model {
     }
 
     public updatePostById(body: posts, params: { [x: string]: string | number }) {
-        const { title, description, image, category_id } = body;
+        const { title, description, post_image, category_id } = body;
         const { id } = params;
         const emptyProperties = this.validation(body);
         return new Promise((resolve, reject) => {
             if (emptyProperties.length > 0) {
                 reject(`proprety ${emptyProperties} is requried`)
             } else {
-                this.update({ title, description, image, category_id }, { id })
+                this.update({ title, description, post_image, category_id }, { id })
                     .then(() => {
                         resolve(`post number ${id} updated successfully`)
                     })
@@ -79,15 +81,7 @@ class Posts extends Model {
 
     public getPostByPostId(params: { [x: string]: string | number }) {
         const { id } = params;
-        // return new Promise((resolve, reject) => {
-        //     this.readByParams({ id })
-        //         .then((result) => {
-        //             resolve(result)
-        //         })
-        //         .catch((error) => {
-        //             reject(error)
-        //         })
-        // })
+        
         return new Promise((resolve, reject) => {
             connection.query(
                 `select 
@@ -104,8 +98,13 @@ class Posts extends Model {
                     if (data.length > 0) {
                         let modifiedData: postsByUser[] = []
                         data.map((index: any) => {
+
                             let { username, email, image, ...others } = index;
-                            modifiedData.push({ ...others, user: { username, email, image } })
+                            let thisUserImage =  image.split('\\')
+                            let userImage = `${process.env.BACK_END_IMAGE_LINK}/${thisUserImage[2]}/${thisUserImage[3]}`
+                            let thisImg = index.post_image.split('\\')
+                            let post_image = `${process.env.BACK_END_IMAGE_LINK}/${thisImg[2]}/${thisImg[3]}`
+                            modifiedData.push({ ...others,post_image, user: { username, email, image: userImage } })
                         })
                         resolve(modifiedData[0])
                     } else {
@@ -134,7 +133,11 @@ class Posts extends Model {
                         let modifiedData: postsByUser[] = []
                         data.map((index: any) => {
                             let { username, email, image, ...others } = index;
-                            modifiedData.push({ ...others, user: { username, email, image } })
+                            let thisUserImage =  image.split('\\')
+                            let userImage = `${process.env.BACK_END_IMAGE_LINK}/${thisUserImage[2]}/${thisUserImage[3]}`
+                            let thisImg = index.post_image.split('\\')
+                            let post_image = `${process.env.BACK_END_IMAGE_LINK}/${thisImg[2]}/${thisImg[3]}`
+                            modifiedData.push({ ...others,post_image, user: { username, email, image: userImage } })
                         })
                         resolve(modifiedData)
                     } else {
@@ -165,7 +168,11 @@ class Posts extends Model {
                         let modifiedData: postsByUser[] = []
                         data.map((index: any) => {
                             let { username, email, image, ...others } = index;
-                            modifiedData.push({ ...others, user: { username, email, image } })
+                            let thisUserImage =  image.split('\\')
+                            let userImage = `${process.env.BACK_END_IMAGE_LINK}/${thisUserImage[2]}/${thisUserImage[3]}`
+                            let thisImg = index.post_image.split('\\')
+                            let post_image = `${process.env.BACK_END_IMAGE_LINK}/${thisImg[2]}/${thisImg[3]}`
+                            modifiedData.push({ ...others,post_image, user: { username, email, image: userImage } })
                         })
                         resolve(modifiedData)
                     } else {
@@ -176,5 +183,4 @@ class Posts extends Model {
         })
     }
 }
-
 export default Posts
