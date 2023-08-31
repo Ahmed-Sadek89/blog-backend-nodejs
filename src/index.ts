@@ -42,8 +42,6 @@ class Server {
         // posts.
         this.app.use('/api/posts', postsRoutes)
 
-        // make model for posts 
-        // get posts example from here https://www.social-searcher.com/
     }
 
     private listen() {
@@ -53,7 +51,3 @@ class Server {
 }
 
 new Server();
-
-// new Posts().addNewPost({title: 'title1', description: 'desc1', image: 'img1', category_id: 12, user_id: 2})
-// .then(res => console.log(res))
-// .catch(error => console.log('error'))

@@ -61,6 +61,11 @@ class Posts extends model_1.default {
         }
         return emptyProperties.toString();
     }
+    getImageLink(image) {
+        let splitImage = image.split('\\');
+        let imageLink = `${process.env.BACK_END_IMAGE_LINK}/${splitImage[2]}/${splitImage[3]}`;
+        return imageLink;
+    }
     addNewPost(post) {
         const { title, description, post_image, category_id, user_id } = post;
         const emptyProperties = this.validation(post);
@@ -114,8 +119,8 @@ class Posts extends model_1.default {
         const { id } = params;
         return new Promise((resolve, reject) => {
             database_1.default.query(`select 
-                    posts.id, posts.title, posts.description, posts.post_image, 
-                    categories.cat_name, 
+                    posts.id, posts.title, posts.description, posts.post_image, posts.created_at as published_at, posts.updated_at as last_modified_at,
+                    categories.id as cat_id, categories.cat_name, 
                     users.username, users.email, users.image 
                 from posts
                 inner join categories on posts.category_id=categories.id
@@ -128,12 +133,17 @@ class Posts extends model_1.default {
                     if (data.length > 0) {
                         let modifiedData = [];
                         data.map((index) => {
-                            let { username, email, image } = index, others = __rest(index, ["username", "email", "image"]);
-                            let thisUserImage = image.split('\\');
-                            let userImage = `${process.env.BACK_END_IMAGE_LINK}/${thisUserImage[2]}/${thisUserImage[3]}`;
-                            let thisImg = index.post_image.split('\\');
-                            let post_image = `${process.env.BACK_END_IMAGE_LINK}/${thisImg[2]}/${thisImg[3]}`;
-                            modifiedData.push(Object.assign(Object.assign({}, others), { post_image, user: { username, email, image: userImage } }));
+                            let { cat_id, cat_name, username, email, image } = index, others = __rest(index, ["cat_id", "cat_name", "username", "email", "image"]);
+                            let post_image = this.getImageLink(index.post_image);
+                            let user_image = this.getImageLink(image);
+                            modifiedData.push(Object.assign(Object.assign({}, others), { post_image, category: {
+                                    cat_id,
+                                    cat_name
+                                }, user: {
+                                    username,
+                                    email,
+                                    image: user_image
+                                } }));
                         });
                         resolve(modifiedData[0]);
                     }
@@ -147,8 +157,8 @@ class Posts extends model_1.default {
     getLatestPosts() {
         return new Promise((resolve, reject) => {
             database_1.default.query(`select 
-                    posts.id, posts.title, posts.description, posts.post_image, 
-                    categories.cat_name, 
+                    posts.id, posts.title, posts.description, posts.post_image, posts.created_at as published_at, posts.updated_at as last_modified_at,
+                    categories.id as cat_id, categories.cat_name, 
                     users.username, users.email, users.image 
                 from posts
                 inner join categories on posts.category_id=categories.id
@@ -161,12 +171,17 @@ class Posts extends model_1.default {
                     if (data.length > 0) {
                         let modifiedData = [];
                         data.map((index) => {
-                            let { username, email, image } = index, others = __rest(index, ["username", "email", "image"]);
-                            let thisUserImage = image.split('\\');
-                            let userImage = `${process.env.BACK_END_IMAGE_LINK}/${thisUserImage[2]}/${thisUserImage[3]}`;
-                            let thisImg = index.post_image.split('\\');
-                            let post_image = `${process.env.BACK_END_IMAGE_LINK}/${thisImg[2]}/${thisImg[3]}`;
-                            modifiedData.push(Object.assign(Object.assign({}, others), { post_image, user: { username, email, image: userImage } }));
+                            let { cat_id, cat_name, username, email, image } = index, others = __rest(index, ["cat_id", "cat_name", "username", "email", "image"]);
+                            const post_image = this.getImageLink(index.post_image);
+                            const user_image = this.getImageLink(image);
+                            modifiedData.push(Object.assign(Object.assign({}, others), { post_image, category: {
+                                    cat_id,
+                                    cat_name
+                                }, user: {
+                                    username,
+                                    email,
+                                    image: user_image
+                                } }));
                         });
                         resolve(modifiedData);
                     }
@@ -181,8 +196,8 @@ class Posts extends model_1.default {
         let { categoryId } = params;
         return new Promise((resolve, reject) => {
             database_1.default.query(`select 
-                    posts.id, posts.title, posts.description, posts.post_image, 
-                    categories.cat_name, 
+                    posts.id, posts.title, posts.description, posts.post_image, posts.created_at as published_at, posts.updated_at as last_modified_at,
+                    categories.id as cat_id, categories.cat_name, 
                     users.username, users.email, users.image 
                 from posts
                 inner join categories on posts.category_id=categories.id
@@ -195,12 +210,17 @@ class Posts extends model_1.default {
                     if (data.length > 0) {
                         let modifiedData = [];
                         data.map((index) => {
-                            let { username, email, image } = index, others = __rest(index, ["username", "email", "image"]);
-                            let thisUserImage = image.split('\\');
-                            let userImage = `${process.env.BACK_END_IMAGE_LINK}/${thisUserImage[2]}/${thisUserImage[3]}`;
-                            let thisImg = index.post_image.split('\\');
-                            let post_image = `${process.env.BACK_END_IMAGE_LINK}/${thisImg[2]}/${thisImg[3]}`;
-                            modifiedData.push(Object.assign(Object.assign({}, others), { post_image, user: { username, email, image: userImage } }));
+                            let { cat_id, cat_name, username, email, image } = index, others = __rest(index, ["cat_id", "cat_name", "username", "email", "image"]);
+                            const post_image = this.getImageLink(index.post_image);
+                            const user_image = this.getImageLink(image);
+                            modifiedData.push(Object.assign(Object.assign({}, others), { post_image, category: {
+                                    cat_id,
+                                    cat_name
+                                }, user: {
+                                    username,
+                                    email,
+                                    image: user_image
+                                } }));
                         });
                         resolve(modifiedData);
                     }

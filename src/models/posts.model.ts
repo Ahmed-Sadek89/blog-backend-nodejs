@@ -1,5 +1,5 @@
 import connection from "../config/database";
-import { posts, postsByUser } from "../dtos/posts.dto";
+import { posts } from "../dtos/posts.dto";
 import Model from "./model";
 import * as dotEnv from 'dotenv';
 dotEnv.config();
@@ -27,6 +27,12 @@ class Posts extends Model {
             })
         }
         return emptyProperties.toString()
+    }
+
+    private getImageLink(image: string): string {
+        let splitImage = image.split('\\');
+        let imageLink = `${process.env.BACK_END_IMAGE_LINK}/${splitImage[2]}/${splitImage[3]}`;
+        return imageLink
     }
 
     public addNewPost(post: posts) {
@@ -81,12 +87,12 @@ class Posts extends Model {
 
     public getPostByPostId(params: { [x: string]: string | number }) {
         const { id } = params;
-        
+
         return new Promise((resolve, reject) => {
             connection.query(
                 `select 
-                    posts.id, posts.title, posts.description, posts.post_image, 
-                    categories.cat_name, 
+                    posts.id, posts.title, posts.description, posts.post_image, posts.created_at as published_at, posts.updated_at as last_modified_at,
+                    categories.id as cat_id, categories.cat_name, 
                     users.username, users.email, users.image 
                 from posts
                 inner join categories on posts.category_id=categories.id
@@ -96,15 +102,24 @@ class Posts extends Model {
                     reject(error)
                 } else {
                     if (data.length > 0) {
-                        let modifiedData: postsByUser[] = []
+                        let modifiedData: posts[] = []
                         data.map((index: any) => {
-
-                            let { username, email, image, ...others } = index;
-                            let thisUserImage =  image.split('\\')
-                            let userImage = `${process.env.BACK_END_IMAGE_LINK}/${thisUserImage[2]}/${thisUserImage[3]}`
-                            let thisImg = index.post_image.split('\\')
-                            let post_image = `${process.env.BACK_END_IMAGE_LINK}/${thisImg[2]}/${thisImg[3]}`
-                            modifiedData.push({ ...others,post_image, user: { username, email, image: userImage } })
+                            let { cat_id, cat_name, username, email, image, ...others } = index;
+                            let post_image = this.getImageLink(index.post_image);
+                            let user_image = this.getImageLink(image);
+                            modifiedData.push({
+                                ...others,
+                                post_image,
+                                category: {
+                                    cat_id,
+                                    cat_name
+                                },
+                                user: {
+                                    username,
+                                    email,
+                                    image: user_image
+                                }
+                            })
                         })
                         resolve(modifiedData[0])
                     } else {
@@ -119,8 +134,8 @@ class Posts extends Model {
         return new Promise((resolve, reject) => {
             connection.query(
                 `select 
-                    posts.id, posts.title, posts.description, posts.post_image, 
-                    categories.cat_name, 
+                    posts.id, posts.title, posts.description, posts.post_image, posts.created_at as published_at, posts.updated_at as last_modified_at,
+                    categories.id as cat_id, categories.cat_name, 
                     users.username, users.email, users.image 
                 from posts
                 inner join categories on posts.category_id=categories.id
@@ -130,14 +145,24 @@ class Posts extends Model {
                     reject(error)
                 } else {
                     if (data.length > 0) {
-                        let modifiedData: postsByUser[] = []
+                        let modifiedData: posts[] = []
                         data.map((index: any) => {
-                            let { username, email, image, ...others } = index;
-                            let thisUserImage =  image.split('\\')
-                            let userImage = `${process.env.BACK_END_IMAGE_LINK}/${thisUserImage[2]}/${thisUserImage[3]}`
-                            let thisImg = index.post_image.split('\\')
-                            let post_image = `${process.env.BACK_END_IMAGE_LINK}/${thisImg[2]}/${thisImg[3]}`
-                            modifiedData.push({ ...others,post_image, user: { username, email, image: userImage } })
+                            let { cat_id, cat_name, username, email, image, ...others } = index;
+                            const post_image = this.getImageLink(index.post_image);
+                            const user_image = this.getImageLink(image);
+                            modifiedData.push({
+                                ...others,
+                                post_image,
+                                category: {
+                                    cat_id,
+                                    cat_name
+                                },
+                                user: {
+                                    username,
+                                    email,
+                                    image: user_image
+                                }
+                            })
                         })
                         resolve(modifiedData)
                     } else {
@@ -149,13 +174,13 @@ class Posts extends Model {
     }
 
 
-    public getLatestPostByCategory(params: {[x: string]: string| number| undefined}) {
+    public getLatestPostByCategory(params: { [x: string]: string | number | undefined }) {
         let { categoryId } = params
         return new Promise((resolve, reject) => {
             connection.query(
                 `select 
-                    posts.id, posts.title, posts.description, posts.post_image, 
-                    categories.cat_name, 
+                    posts.id, posts.title, posts.description, posts.post_image, posts.created_at as published_at, posts.updated_at as last_modified_at,
+                    categories.id as cat_id, categories.cat_name, 
                     users.username, users.email, users.image 
                 from posts
                 inner join categories on posts.category_id=categories.id
@@ -165,14 +190,24 @@ class Posts extends Model {
                     reject(error)
                 } else {
                     if (data.length > 0) {
-                        let modifiedData: postsByUser[] = []
+                        let modifiedData: posts[] = []
                         data.map((index: any) => {
-                            let { username, email, image, ...others } = index;
-                            let thisUserImage =  image.split('\\')
-                            let userImage = `${process.env.BACK_END_IMAGE_LINK}/${thisUserImage[2]}/${thisUserImage[3]}`
-                            let thisImg = index.post_image.split('\\')
-                            let post_image = `${process.env.BACK_END_IMAGE_LINK}/${thisImg[2]}/${thisImg[3]}`
-                            modifiedData.push({ ...others,post_image, user: { username, email, image: userImage } })
+                            let { cat_id, cat_name, username, email, image, ...others } = index;
+                            const post_image = this.getImageLink(index.post_image);
+                            const user_image = this.getImageLink(image);
+                            modifiedData.push({
+                                ...others,
+                                post_image,
+                                category: {
+                                    cat_id,
+                                    cat_name
+                                },
+                                user: {
+                                    username,
+                                    email,
+                                    image: user_image
+                                }
+                            })
                         })
                         resolve(modifiedData)
                     } else {
