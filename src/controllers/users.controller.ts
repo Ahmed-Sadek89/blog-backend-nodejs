@@ -1,6 +1,6 @@
 import { users } from "../dtos/users.dto"
 import { Request, Response } from 'express';
-import User from "../models/user.model";
+import User from "../models/users.model";
 import { createToken } from "../config/createToken";
 
 const user = new User();

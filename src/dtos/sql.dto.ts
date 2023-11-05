@@ -1,21 +1,18 @@
-export interface sql_set_props{
-    setCommand: string, 
-    setObject: { [x: string]: string | number | undefined } | null 
+import { params } from "../types/models.types"
+
+export interface sql_props{
+    command: string, 
+    params: params | null 
 }
 
-export interface sql_set_return{
-    setCommand: string, 
-    setValues: (string | number | undefined)[] 
+export interface sql_return{
+    command: string, 
+    params: (string | number | undefined)[],
 }
 
-
-
-export interface sql_where_props{
-    whereCommand: string, 
-    whereObject: { [x: string]: string | number | undefined } | null 
+export interface sql_update_return{
+    command: string, 
+    paramsSet: (string | number | undefined)[],
+    paramsWhere: (string | number | undefined)[] 
 }
 
-export interface sql_where_return{
-    whereCommand: string, 
-    whereValues: (string | number | undefined)[] 
-}

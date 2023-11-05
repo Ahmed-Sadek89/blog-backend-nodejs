@@ -1,0 +1,1 @@
+export type params = { [x: string]: string | number | undefined };

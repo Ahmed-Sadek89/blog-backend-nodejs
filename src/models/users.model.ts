@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt'
 import { users, user_login, users_info } from '../dtos/users.dto'
 import Model from "./model";
+import { getUsersInfo } from '../assets/UsersAssets/getUsersInfo';
+import { params } from '../types/models.types';
 
 class User extends Model {
     constructor() {
@@ -11,12 +13,7 @@ class User extends Model {
         return new Promise((resolve, reject) => {
             this.read()
                 .then((result: any) => {
-                    let data: users_info[] = []
-                    result.map((index: users_info) => {
-                        let { password, ...others } = index;
-                        data.push(others)
-                    })
-                    resolve(data)
+                    resolve(getUsersInfo(result))
                 })
                 .catch(error => {
                     reject(error)
@@ -25,7 +22,7 @@ class User extends Model {
         })
     }
 
-    public getUserByParam(params: { [x: string]: string | number | undefined }) {
+    public getUserByParam(params: params) {
         return new Promise((resolve, reject) => {
             this.readByParams(params)
                 .then((result: any) => {
@@ -45,7 +42,7 @@ class User extends Model {
             username, email, password: hashedPassword, image
         })
         return payload
-       
+
     }
 
     public async login(login_data: user_login) {
@@ -72,55 +69,55 @@ class User extends Model {
         })
     }
 
-    public async updateUser({ username, email, password, image }: users, { id }: { [x: string]: string | undefined | number }) {
+    public async updateUser(user: users, params: params) {
         return new Promise((resolve, reject) => {
-            this.getUserByParam({ id })
+            this.getUserByParam({ id: params.id })
                 .then((res) => {
                     if (!res) {
-                        reject(`user number ${id} is not found`)
+                        reject(`user number ${params.id} is not found`)
                     }
                     return res as users
                 })
                 .then(async (res) => {
-                    const hashedPassword = bcrypt.hashSync(password, 10);
+                    const hashedPassword = bcrypt.hashSync(user.password, 10);
                     await this.update(
                         {
-                            username: username || res.username,
-                            email: email || res.email,
+                            username: user.username || res.username,
+                            email: user.email || res.email,
                             password: hashedPassword || res.password,
-                            image: image || res.image
+                            image: user.image || res.image
                         },
-                        { id }
+                        { id: params.id }
                     )
                         .then(() => {
-                            resolve(`user number ${id} is updated successfully`)
+                            resolve(`user number ${params.id} is updated successfully`)
                         })
-                        .catch(() => reject(`user number ${id} did not update successfully`))
+                        .catch(() => reject(`user number ${params.id} did not update successfully`))
                 })
                 .catch(() => {
-                    reject(`user number ${id} is not found`)
+                    reject(`user number ${params.id} is not found`)
                 })
         })
     }
 
-    public async deleteUser({ id }: { [x: string]: string | number }) {
+    public async deleteUser(params: params) {
         return new Promise((resolve, reject) => {
-            this.getUserByParam({ id })
+            this.getUserByParam({ id: params.id })
                 .then((res) => {
                     if (!res) {
-                        reject(`user number ${id} is not found`)
+                        reject(`user number ${params.id} is not found`)
                     }
                     return res as users
                 })
                 .then(async (res) => {
-                    await this.delete({ id })
+                    await this.delete({ id: params.id })
                         .then(() => {
-                            resolve(`user number ${id} is deleted successfully`)
+                            resolve(`user number ${params.id} is deleted successfully`)
                         })
-                        .catch(() => reject(`user number ${id} did not delete successfully`))
+                        .catch(() => reject(`user number ${params.id} did not delete successfully`))
                 })
                 .catch(() => {
-                    reject(`user number ${id} is not found`)
+                    reject(`user number ${params.id} is not found`)
                 })
         })
     }
