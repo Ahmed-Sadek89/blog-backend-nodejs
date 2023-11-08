@@ -24,9 +24,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUserById = exports.updateUserById = exports.login = exports.rejester = exports.getuserById = exports.getAllUsers = void 0;
-const user_model_1 = __importDefault(require("../models/user.model"));
+const users_model_1 = __importDefault(require("../models/users.model"));
 const createToken_1 = require("../config/createToken");
-const user = new user_model_1.default();
+const user = new users_model_1.default();
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield user.getAllUsers()
         .then((result) => {
@@ -67,10 +67,10 @@ const rejester = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let { username, email, password } = req.body;
     let image = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
     yield user.register({ username, email, password, image })
-        .then(() => {
+        .then((result) => {
         res.status(200).json({
             status: 200,
-            result: `user ${username} inserted successfully`
+            result
         });
     })
         .catch(e => {

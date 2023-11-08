@@ -29,11 +29,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mysql_1 = __importDefault(require("mysql"));
 const dotEnv = __importStar(require("dotenv"));
 dotEnv.config();
-// const config = { 
-//     user: "root", 
+// const config = {
+//     user: "root",
 //     password: "",
 //     host: "localhost",
-//     database: "Blog" 
+//     database: "Blog"
 // };
 const config = {
     user: process.env.USER,
@@ -41,5 +41,24 @@ const config = {
     host: process.env.HOST,
     database: process.env.DB_NAME,
 };
-const connection = mysql_1.default.createConnection(Object.assign({}, config));
-exports.default = connection;
+var connection;
+function handleDisconnect() {
+    connection = mysql_1.default.createConnection(Object.assign({}, config));
+    connection.connect(function (err) {
+        if (err) {
+            console.log("error when connecting to db:", err);
+            setTimeout(handleDisconnect, 2000);
+        }
+    });
+    connection.on("error", function (err) {
+        console.log("db error", err);
+        if (err.code === "PROTOCOL_CONNECTION_LOST") {
+            handleDisconnect();
+        }
+        else {
+            throw err;
+        }
+    });
+    return connection;
+}
+exports.default = handleDisconnect();
