@@ -44,10 +44,10 @@ export const rejester = async (req: Request, res: Response) => {
     let { username, email, password } = req.body as users;
     let image = req.file?.path 
     await user.register({ username, email, password, image })
-        .then(() => {
+        .then((result) => {
             res.status(200).json({
                 status: 200,
-                result: `user ${username} inserted successfully`
+                result
             })
         })
         .catch(e => {
