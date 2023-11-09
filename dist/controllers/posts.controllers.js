@@ -19,17 +19,24 @@ const addNewPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     var _a;
     const { title, description, category_id, user_id } = req.body;
     let post_image = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
-    yield post.addNewPost({ title, description, post_image: post_image, category_id, user_id })
-        .then(result => {
+    yield post
+        .addNewPost({
+        title,
+        description,
+        post_image: post_image,
+        category_id,
+        user_id,
+    })
+        .then((result) => {
         res.status(200).json({
             status: 200,
-            result
+            result,
         });
     })
-        .catch(error => {
+        .catch((error) => {
         res.status(400).json({
             status: 400,
-            result: error
+            result: error,
         });
     });
 });
@@ -39,84 +46,89 @@ const updatePostById = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const { title, description, category_id } = req.body;
     let post_image = (_b = req.file) === null || _b === void 0 ? void 0 : _b.path;
     let { id } = req.params;
-    yield post.updatePostById({ title, description, post_image, category_id }, { id })
-        .then(result => {
+    yield post
+        .updatePostById({ title, description, post_image, category_id }, { id })
+        .then((result) => {
         res.status(200).json({
             status: 200,
-            result
+            result,
         });
     })
-        .catch(error => {
+        .catch((error) => {
         res.status(400).json({
             status: 400,
-            result: error
+            result: error,
         });
     });
 });
 exports.updatePostById = updatePostById;
 const deletePostById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let { id } = req.params;
-    yield post.deletePostById({ id })
-        .then(result => {
+    yield post
+        .deletePostById({ id })
+        .then((result) => {
         res.status(200).json({
             status: 200,
-            result
+            result,
         });
     })
-        .catch(error => {
+        .catch((error) => {
         res.status(400).json({
             status: 400,
-            result: error
+            result: error,
         });
     });
 });
 exports.deletePostById = deletePostById;
 const getLatestPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield post.getLatestPosts()
-        .then(result => {
+    yield post
+        .getLatestPosts()
+        .then((result) => {
         res.status(200).json({
             status: 200,
-            result
+            result,
         });
     })
-        .catch(error => {
+        .catch((error) => {
         res.status(404).json({
             status: 404,
-            result: error
+            result: error,
         });
     });
 });
 exports.getLatestPosts = getLatestPosts;
 const getLatestPostByCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { categoryId } = req.params;
-    yield post.getLatestPostByCategory({ categoryId })
-        .then(result => {
+    yield post
+        .getLatestPostByCategory({ categoryId })
+        .then((result) => {
         res.status(200).json({
             status: 200,
-            result
+            result,
         });
     })
-        .catch(error => {
+        .catch((error) => {
         res.status(404).json({
             status: 404,
-            result: error
+            result: error,
         });
     });
 });
 exports.getLatestPostByCategory = getLatestPostByCategory;
 const getPostByPostId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    yield post.getPostByPostId({ id })
-        .then(result => {
+    yield post
+        .getPostByPostId({ id })
+        .then((result) => {
         res.status(200).json({
             status: 200,
-            result
+            result,
         });
     })
-        .catch(error => {
+        .catch((error) => {
         res.status(404).json({
             status: 404,
-            result: error
+            result: error,
         });
     });
 });

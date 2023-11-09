@@ -58,7 +58,7 @@ class Posts extends model_1.default {
                 .then(() => {
                 resolve(`new post inserted successfully`);
             })
-                .catch((error) => {
+                .catch(() => {
                 reject(`new post did not insert!`);
             });
         });

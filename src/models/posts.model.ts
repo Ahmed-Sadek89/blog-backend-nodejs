@@ -22,7 +22,7 @@ class Posts extends Model {
         .then(() => {
           resolve(`new post inserted successfully`);
         })
-        .catch((error) => {
+        .catch(() => {
           reject(`new post did not insert!`);
         });
     });

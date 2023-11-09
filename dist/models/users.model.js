@@ -59,7 +59,6 @@ class User extends model_1.default {
                 if (!res) {
                     reject("email is not found");
                 }
-                console.log(res);
                 return res;
             })
                 .then((res) => {

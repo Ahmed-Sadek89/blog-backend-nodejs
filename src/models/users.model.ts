@@ -63,7 +63,6 @@ class User extends Model {
           if (!res) {
             reject("email is not found");
           }
-          console.log(res);
           return res as users;
         })
         .then((res) => {
