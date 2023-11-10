@@ -60,13 +60,16 @@ export const rejester = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
     let { email, password } = req.body as users;
-    const token = createToken({ email });
     await user.login({ email, password })
+        .then((result: any) => {
+            const token = createToken({ ...result });
+            return token
+        })
         .then((result) => {
             res.status(200).json({
                 status: 200,
-                result,
-                token
+                message: "token success",
+                token: result
             })
         })
         .catch(e => {

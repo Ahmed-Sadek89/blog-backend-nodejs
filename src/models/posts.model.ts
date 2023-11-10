@@ -95,7 +95,7 @@ class Posts extends Model {
               });
               resolve(modifiedData[0]);
             } else {
-              reject([]);
+              resolve([]);
             }
           }
         }
@@ -176,7 +176,7 @@ class Posts extends Model {
               });
               resolve(modifiedData);
             } else {
-              reject([]);
+              resolve([]);
             }
           }
         }

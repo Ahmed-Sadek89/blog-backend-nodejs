@@ -2,13 +2,6 @@ import mysql from "mysql";
 import * as dotEnv from "dotenv";
 dotEnv.config();
 
-// const config = {
-//     user: "root",
-//     password: "",
-//     host: "localhost",
-//     database: "Blog"
-// };
-
 const config = {
   user: process.env.USER,
   password: process.env.PASSWORD,
@@ -32,7 +25,7 @@ connection.connect((err) => {
 connection.on("error", (err) => {
   console.error("Connection lost to MySQL server:");
   console.error(err);
-  if (err.code === "PROTOCOL_CONNECTION_LOST") {
+  if (err.code === "PROTOCOL_CONNECTION_LOST" || err.code === "PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR") {
     connection = connect(); // Reconnect on the 'error' event.
   } else {
     throw err;
