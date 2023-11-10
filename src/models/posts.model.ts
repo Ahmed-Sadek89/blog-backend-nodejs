@@ -1,4 +1,5 @@
 import { getImageLink } from "../assets/ModelsAssets/getImageLink";
+import { getPostCommand } from "../assets/postCommand";
 import { validate } from "../assets/validation/validate";
 import connection from "../config/database";
 import { posts } from "../dtos/posts.dto";
@@ -7,8 +8,10 @@ import * as dotEnv from "dotenv";
 dotEnv.config();
 
 class Posts extends Model {
+  static command: string;
   constructor() {
     super("posts");
+    Posts.command = getPostCommand();
   }
 
   public addNewPost(post: posts) {
@@ -62,17 +65,9 @@ class Posts extends Model {
 
   public getPostByPostId(params: { [x: string]: string | number }) {
     const { id } = params;
-
     return new Promise((resolve, reject) => {
       connection.query(
-        `select 
-                    posts.id, posts.title, posts.description, posts.post_image, posts.created_at as published_at, posts.updated_at as last_modified_at,
-                    categories.id as cat_id, categories.cat_name, 
-                    users.username, users.email, users.image 
-                from posts
-                inner join categories on posts.category_id=categories.id
-                inner join users on posts.user_id=users.id
-                where posts.id=${id}`,
+        `${Posts.command} where posts.id=${id}`,
         (error, data) => {
           if (error) {
             reject(error);
@@ -111,14 +106,7 @@ class Posts extends Model {
   public getLatestPosts() {
     return new Promise((resolve, reject) => {
       connection.query(
-        `select 
-                    posts.id, posts.title, posts.description, posts.post_image, posts.created_at as published_at, posts.updated_at as last_modified_at,
-                    categories.id as cat_id, categories.cat_name, 
-                    users.username, users.email, users.image 
-                from posts
-                inner join categories on posts.category_id=categories.id
-                inner join users on posts.user_id=users.id
-                order by posts.updated_at desc`,
+        `${Posts.command} order by posts.created_at desc`,
         (error, data) => {
           if (error) {
             reject(error);
@@ -146,7 +134,7 @@ class Posts extends Model {
               });
               resolve(modifiedData);
             } else {
-              reject([]);
+              resolve([]);
             }
           }
         }
@@ -160,14 +148,7 @@ class Posts extends Model {
     let { categoryId } = params;
     return new Promise((resolve, reject) => {
       connection.query(
-        `select 
-                    posts.id, posts.title, posts.description, posts.post_image, posts.created_at as published_at, posts.updated_at as last_modified_at,
-                    categories.id as cat_id, categories.cat_name, 
-                    users.username, users.email, users.image 
-                from posts
-                inner join categories on posts.category_id=categories.id
-                inner join users on posts.user_id=users.id
-                where posts.category_id=${categoryId} order by posts.updated_at desc`,
+        `${Posts.command} where posts.category_id=${categoryId} order by posts.created_at desc`,
         (error, data) => {
           if (error) {
             reject(error);

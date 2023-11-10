@@ -14,7 +14,6 @@ const config = {
   password: process.env.PASSWORD,
   host: process.env.HOST,
   database: process.env.DB_NAME,
-  connectionLimit: 10,
 };
 
 function connect() {
