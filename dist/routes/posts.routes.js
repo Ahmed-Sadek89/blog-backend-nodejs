@@ -15,7 +15,7 @@ router.get('/:id', posts_controllers_1.getPostByPostId);
 router.use(verifyToken_middleware_1.verifyToken);
 // delete post
 router.delete('/:id', posts_controllers_1.deletePostById);
-router.use(multerUpload_1.postsUpload.single('image'));
+router.use(multerUpload_1.postsUpload.single('post_image'));
 // insert new post
 router.post('/addNewPost', posts_controllers_1.addNewPost);
 // update post -> title, description, image, category_id

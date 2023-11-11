@@ -83,13 +83,16 @@ const rejester = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.rejester = rejester;
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let { email, password } = req.body;
-    const token = (0, createToken_1.createToken)({ email });
     yield user.login({ email, password })
+        .then((result) => {
+        const token = (0, createToken_1.createToken)(Object.assign({}, result));
+        return token;
+    })
         .then((result) => {
         res.status(200).json({
             status: 200,
-            result,
-            token
+            message: "token success",
+            token: result
         });
     })
         .catch(e => {

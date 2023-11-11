@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const getImageLink_1 = require("../assets/ModelsAssets/getImageLink");
+const postCommand_1 = require("../assets/postCommand");
 const validate_1 = require("../assets/validation/validate");
 const database_1 = __importDefault(require("../config/database"));
 const model_1 = __importDefault(require("./model"));
@@ -46,11 +47,13 @@ dotEnv.config();
 class Posts extends model_1.default {
     constructor() {
         super("posts");
+        Posts.command = (0, postCommand_1.getPostCommand)();
     }
     addNewPost(post) {
         const { title, description, post_image, category_id, user_id } = post;
         const emptyProperties = (0, validate_1.validate)(post);
         return new Promise((resolve, reject) => {
+            console.log({ post_image });
             if (emptyProperties.length > 0) {
                 reject(`proprety ${emptyProperties} is requried`);
             }
@@ -97,14 +100,7 @@ class Posts extends model_1.default {
     getPostByPostId(params) {
         const { id } = params;
         return new Promise((resolve, reject) => {
-            database_1.default.query(`select 
-                    posts.id, posts.title, posts.description, posts.post_image, posts.created_at as published_at, posts.updated_at as last_modified_at,
-                    categories.id as cat_id, categories.cat_name, 
-                    users.username, users.email, users.image 
-                from posts
-                inner join categories on posts.category_id=categories.id
-                inner join users on posts.user_id=users.id
-                where posts.id=${id}`, (error, data) => {
+            database_1.default.query(`${Posts.command} where posts.id=${id}`, (error, data) => {
                 if (error) {
                     reject(error);
                 }
@@ -127,7 +123,7 @@ class Posts extends model_1.default {
                         resolve(modifiedData[0]);
                     }
                     else {
-                        reject([]);
+                        resolve([]);
                     }
                 }
             });
@@ -135,14 +131,7 @@ class Posts extends model_1.default {
     }
     getLatestPosts() {
         return new Promise((resolve, reject) => {
-            database_1.default.query(`select 
-                    posts.id, posts.title, posts.description, posts.post_image, posts.created_at as published_at, posts.updated_at as last_modified_at,
-                    categories.id as cat_id, categories.cat_name, 
-                    users.username, users.email, users.image 
-                from posts
-                inner join categories on posts.category_id=categories.id
-                inner join users on posts.user_id=users.id
-                order by posts.updated_at desc`, (error, data) => {
+            database_1.default.query(`${Posts.command} order by posts.created_at desc`, (error, data) => {
                 if (error) {
                     reject(error);
                 }
@@ -165,7 +154,7 @@ class Posts extends model_1.default {
                         resolve(modifiedData);
                     }
                     else {
-                        reject([]);
+                        resolve([]);
                     }
                 }
             });
@@ -174,14 +163,7 @@ class Posts extends model_1.default {
     getLatestPostByCategory(params) {
         let { categoryId } = params;
         return new Promise((resolve, reject) => {
-            database_1.default.query(`select 
-                    posts.id, posts.title, posts.description, posts.post_image, posts.created_at as published_at, posts.updated_at as last_modified_at,
-                    categories.id as cat_id, categories.cat_name, 
-                    users.username, users.email, users.image 
-                from posts
-                inner join categories on posts.category_id=categories.id
-                inner join users on posts.user_id=users.id
-                where posts.category_id=${categoryId} order by posts.updated_at desc`, (error, data) => {
+            database_1.default.query(`${Posts.command} where posts.category_id=${categoryId} order by posts.created_at desc`, (error, data) => {
                 if (error) {
                     reject(error);
                 }
@@ -204,7 +186,7 @@ class Posts extends model_1.default {
                         resolve(modifiedData);
                     }
                     else {
-                        reject([]);
+                        resolve([]);
                     }
                 }
             });

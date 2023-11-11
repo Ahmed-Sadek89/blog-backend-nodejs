@@ -29,18 +29,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mysql_1 = __importDefault(require("mysql"));
 const dotEnv = __importStar(require("dotenv"));
 dotEnv.config();
-// const config = {
-//     user: "root",
-//     password: "",
-//     host: "localhost",
-//     database: "Blog"
-// };
 const config = {
     user: process.env.USER,
     password: process.env.PASSWORD,
     host: process.env.HOST,
     database: process.env.DB_NAME,
-    connectionLimit: 10,
 };
 function connect() {
     return mysql_1.default.createConnection(Object.assign({}, config));
@@ -55,7 +48,7 @@ connection.connect((err) => {
 connection.on("error", (err) => {
     console.error("Connection lost to MySQL server:");
     console.error(err);
-    if (err.code === "PROTOCOL_CONNECTION_LOST") {
+    if (err.code !== "") {
         connection = connect(); // Reconnect on the 'error' event.
     }
     else {

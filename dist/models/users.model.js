@@ -63,7 +63,10 @@ class User extends model_1.default {
             })
                 .then((res) => {
                 if (bcrypt_1.default.compareSync(password, res.password) === true) {
-                    resolve("login success");
+                    resolve({
+                        id: res.id,
+                        email: res.email,
+                    });
                 }
                 else {
                     reject("incorrect password");
