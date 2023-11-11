@@ -18,6 +18,7 @@ class Posts extends Model {
     const { title, description, post_image, category_id, user_id } = post;
     const emptyProperties = validate(post);
     return new Promise((resolve, reject) => {
+      console.log({post_image});
       if (emptyProperties.length > 0) {
         reject(`proprety ${emptyProperties} is requried`);
       }

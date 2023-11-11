@@ -17,7 +17,7 @@ router.use(verifyToken)
 // delete post
 router.delete('/:id', deletePostById);
 
-router.use( postsUpload.single('image'))
+router.use( postsUpload.single('post_image'))
 // insert new post
 router.post('/addNewPost', addNewPost);
 // update post -> title, description, image, category_id

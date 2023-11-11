@@ -25,7 +25,7 @@ connection.connect((err) => {
 connection.on("error", (err) => {
   console.error("Connection lost to MySQL server:");
   console.error(err);
-  if (err.code === "PROTOCOL_CONNECTION_LOST" || err.code === "PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR") {
+  if (err.code !== "") {
     connection = connect(); // Reconnect on the 'error' event.
   } else {
     throw err;
