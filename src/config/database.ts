@@ -7,6 +7,15 @@ const config = {
   password: process.env.PASSWORD,
   host: process.env.HOST,
   database: process.env.DB_NAME,
+  connectAttributes: {
+    _client_name: "mysql",
+    _client_version: "5.7.0",
+    _os: "Windows",
+    _platform: "Win32",
+    _runtime_version: "v12.18.0",
+    _tcp_sequence_no: 1,
+    program_name: "mysql",
+  },
 };
 
 function connect() {
@@ -32,4 +41,8 @@ connection.on("error", (err) => {
   }
 });
 
-export default connection
+connection.on("enqueue", () => {
+  console.log("Connection is enqueued after fatal error.");
+});
+
+export default connection;
