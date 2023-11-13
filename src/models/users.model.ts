@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { users, user_login, users_info } from "../dtos/users.dto";
+import { users, user_login } from "../dtos/users.dto";
 import Model from "./model";
 import { getUsersInfo } from "../assets/UsersAssets/getUsersInfo";
 import { params } from "../types/models.types";
@@ -17,6 +17,7 @@ class User extends Model {
           resolve(getUsersInfo(result));
         })
         .catch((error) => {
+          console.log(error);
           reject(error);
         });
     });
@@ -82,42 +83,36 @@ class User extends Model {
   }
 
   public updateUser(user: users, params: params) {
-    const emptyProperty = validate(user);
-
     return new Promise((resolve, reject) => {
-      if (emptyProperty.length > 0) {
-        reject(`property ${emptyProperty} is required`);
-      } else {
-        this.getUserByParam({ id: params.id })
-          .then((res) => {
-            if (!res) {
-              reject(`user number ${params.id} is not found`);
-            } else {
-              return res as users;
-            }
-          })
-          .then((res) => {
-            const hashedPassword = bcrypt.hashSync(user.password, 10);
-            this.update(
-              {
-                username: user.username || res?.username,
-                email: user.email || res?.email,
-                password: hashedPassword || res?.password,
-                image: user.image || res?.image,
-              },
-              { id: params.id }
-            )
-              .then(() => {
-                resolve(`user number ${params.id} is updated successfully`);
-              })
-              .catch(() =>
-                reject(`user number ${params.id} did not update successfully`)
-              );
-          })
-          .catch(() => {
+      this.getUserByParam({ id: params.id })
+        .then((res) => {
+          if (!res) {
             reject(`user number ${params.id} is not found`);
-          });
-      }
+          } else {
+            return res as users;
+          }
+        })
+        .then((res) => {
+          const hashedPassword = bcrypt.hashSync(user.password, 10);
+          this.update(
+            {
+              username: user.username || res?.username,
+              email: user.email || res?.email,
+              password: hashedPassword || res?.password,
+              image: user.image || res?.image,
+            },
+            { id: params.id }
+          )
+            .then(() => {
+              resolve(`user number ${params.id} is updated successfully`);
+            })
+            .catch(() =>
+              reject(`user number ${params.id} did not update successfully`)
+            );
+        })
+        .catch(() => {
+          reject(`user number ${params.id} is not found`);
+        });
     });
   }
 

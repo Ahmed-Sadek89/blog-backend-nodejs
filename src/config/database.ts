@@ -27,7 +27,7 @@ let connection = connect();
 connection.connect((err) => {
   if (err) {
     console.error("Failed to connect to MySQL server.");
-    setTimeout(connect, 2000); // Reconnect after 2 seconds.
+    connection = connect(); // Reconnect after 2 seconds.
   }
 });
 
@@ -42,7 +42,7 @@ connection.on("error", (err) => {
 });
 
 connection.on("enqueue", () => {
-  console.log("Connection is enqueued after fatal error.");
+  connection = connect();
 });
 
 export default connection;

@@ -18,7 +18,7 @@ class Posts extends Model {
     const { title, description, post_image, category_id, user_id } = post;
     const emptyProperties = validate(post);
     return new Promise((resolve, reject) => {
-      console.log({post_image});
+      console.log({ post_image });
       if (emptyProperties.length > 0) {
         reject(`proprety ${emptyProperties} is requried`);
       }
@@ -32,22 +32,28 @@ class Posts extends Model {
     });
   }
 
-  public updatePostById(body: posts, params: { [x: string]: string | number }) {
-    const { title, description, post_image, category_id } = body;
+  public updatePostById(
+    body: { [x: string]: string | number },
+    params: { [x: string]: string | number }
+  ) {
     const { id } = params;
-    const emptyProperties = validate(body);
     return new Promise((resolve, reject) => {
-      if (emptyProperties.length > 0) {
-        reject(`proprety ${emptyProperties} is requried`);
-      } else {
-        this.update({ title, description, post_image, category_id }, { id })
-          .then(() => {
-            resolve(`post number ${id} updated successfully`);
-          })
-          .catch(() => {
-            reject(`post number ${id} did not update!`);
-          });
-      }
+      this.getPostByPostId({ id })
+        .then((res) => {
+          return res as posts;
+        })
+        .then((res) => {
+          this.update(
+            { ...body, post_image: res.post_image || body.post_image },
+            { id }
+          )
+            .then(() => {
+              resolve(`post number ${id} updated successfully`);
+            })
+            .catch(() => {
+              reject(`post number ${id} did not update!`);
+            });
+        });
     });
   }
 
@@ -78,8 +84,8 @@ class Posts extends Model {
               data.map((index: any) => {
                 let { cat_id, cat_name, username, email, image, ...others } =
                   index;
-                let post_image = getImageLink(index.post_image);
-                let user_image = getImageLink(image);
+                const post_image = getImageLink(index.post_image, "posts");
+                const user_image = getImageLink(image, "users");
                 modifiedData.push({
                   ...others,
                   post_image,
@@ -117,8 +123,8 @@ class Posts extends Model {
               data.map((index: any) => {
                 let { cat_id, cat_name, username, email, image, ...others } =
                   index;
-                const post_image = getImageLink(index.post_image);
-                const user_image = getImageLink(image);
+                const post_image = getImageLink(index.post_image, "posts");
+                const user_image = getImageLink(image, "users");
                 modifiedData.push({
                   ...others,
                   post_image,
@@ -159,8 +165,8 @@ class Posts extends Model {
               data.map((index: any) => {
                 let { cat_id, cat_name, username, email, image, ...others } =
                   index;
-                const post_image = getImageLink(index.post_image);
-                const user_image = getImageLink(image);
+                const post_image = getImageLink(index.post_image, "posts");
+                const user_image = getImageLink(image, "users");
                 modifiedData.push({
                   ...others,
                   post_image,
