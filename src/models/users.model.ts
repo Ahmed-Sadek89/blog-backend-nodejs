@@ -1,19 +1,26 @@
 import bcrypt from "bcrypt";
-import { users, user_login } from "../dtos/users.dto";
+import {
+  user,
+  user_input,
+  user_login,
+  user_output,
+  user_token,
+} from "../dtos/users.dto";
 import Model from "./model";
 import { getUsersInfo } from "../assets/UsersAssets/getUsersInfo";
 import { params } from "../types/models.types";
 import { validate } from "../assets/validation/validate";
+import { getUserInfo } from "../assets/UsersAssets/getUserInfo";
 
 class User extends Model {
   constructor() {
     super("users");
   }
 
-  public getAllUsers() {
+  public getAllUsers(): Promise<user_output[]> {
     return new Promise((resolve, reject) => {
       this.read()
-        .then((result: any) => {
+        .then((result) => {
           resolve(getUsersInfo(result));
         })
         .catch((error) => {
@@ -23,11 +30,15 @@ class User extends Model {
     });
   }
 
-  public getUserByParam(params: params) {
+  public getUserByParam(params: params): Promise<user_output| {}> {
     return new Promise((resolve, reject) => {
       this.readByParams(params)
-        .then((result: any) => {
-          resolve(result);
+        .then((result) => {
+          if (result) {
+            resolve(getUserInfo(result || {}));
+          } else {
+            resolve({})
+          }
         })
         .catch((error) => {
           reject(error);
@@ -35,11 +46,11 @@ class User extends Model {
     });
   }
 
-  public register(rejester_data: users) {
+  public register(rejester_data: user_input): Promise<string> {
     const emptyProperty = validate(rejester_data);
     return new Promise((resolve, reject) => {
       if (emptyProperty.length > 0) {
-        reject(`property ${emptyProperty} is required`);
+        reject(`${emptyProperty} is required`);
       } else {
         const hashedPassword = bcrypt.hashSync(rejester_data.password, 10);
         this.insert({
@@ -55,16 +66,15 @@ class User extends Model {
       }
     });
   }
-
-  public login(login_data: user_login) {
+  public login(login_data: user_login): Promise<user_token> {
     const { email, password } = login_data;
     return new Promise((resolve, reject) => {
-      this.getUserByParam({ email })
-        .then((res: any) => {
+      this.readByParams({ email })
+        .then((res) => {
           if (!res) {
             reject("email is not found");
           }
-          return res as users;
+          return res as user;
         })
         .then((res) => {
           if (bcrypt.compareSync(password, res.password) === true) {
@@ -77,65 +87,67 @@ class User extends Model {
           }
         })
         .catch((e) => {
+          console.log(e);
           reject("email is not found");
         });
     });
   }
 
-  public updateUser(user: users, params: params) {
+  public updateUser(user: user_input, params: params): Promise<string> {
+    const { id } = params;
     return new Promise((resolve, reject) => {
-      this.getUserByParam({ id: params.id })
+      this.getUserByParam({ id: id })
         .then((res) => {
           if (!res) {
-            reject(`user number ${params.id} is not found`);
+            reject(`user number ${id} is not found`);
           } else {
-            return res as users;
+            return res as user;
           }
         })
         .then((res) => {
           const hashedPassword = bcrypt.hashSync(user.password, 10);
           this.update(
             {
-              username: user.username || res?.username,
-              email: user.email || res?.email,
+              ...user,
               password: hashedPassword || res?.password,
               image: user.image || res?.image,
             },
-            { id: params.id }
+            { id: id }
           )
             .then(() => {
-              resolve(`user number ${params.id} is updated successfully`);
+              resolve(`user number ${id} is updated successfully`);
             })
             .catch(() =>
-              reject(`user number ${params.id} did not update successfully`)
+              reject(`user number ${id} did not update successfully`)
             );
         })
-        .catch(() => {
-          reject(`user number ${params.id} is not found`);
+        .catch((e) => {
+          reject(`user number ${id} is not found`);
         });
     });
   }
 
-  public deleteUser(params: params) {
+  public deleteUser(params: params): Promise<string> {
+    const { id } = params;
     return new Promise((resolve, reject) => {
-      this.getUserByParam({ id: params.id })
+      this.getUserByParam({ id })
         .then((res) => {
           if (!res) {
-            reject(`user number ${params.id} is not found`);
+            reject(`user number ${id} is not found`);
           }
-          return res as users;
+          return res as user;
         })
         .then(() => {
-          this.delete({ id: params.id })
+          this.delete({ id })
             .then(() => {
-              resolve(`user number ${params.id} is deleted successfully`);
+              resolve(`user number ${id} is deleted successfully`);
             })
             .catch(() =>
-              reject(`user number ${params.id} did not delete successfully`)
+              reject(`user number ${id} did not delete successfully`)
             );
         })
         .catch(() => {
-          reject(`user number ${params.id} is not found`);
+          reject(`user number ${id} is not found`);
         });
     });
   }

@@ -53,7 +53,7 @@ class Model {
           if (data.length > 0) {
             resolve(getResultsBySelectByParams(data));
           } else {
-            reject({});
+            resolve({});
           }
         }
       });

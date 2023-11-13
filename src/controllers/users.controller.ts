@@ -1,14 +1,13 @@
-import { users } from "../dtos/users.dto"
 import { Request, Response } from 'express';
 import User from "../models/users.model";
 import { createToken } from "../config/createToken";
+import { user_input, user_login } from '../dtos/users.dto';
 
 const user = new User();
 
-export const getAllUsers = async (req: Request, res: Response) => {
+export const getAllUsers = async (_req: Request, res: Response) => {
     await user.getAllUsers()
         .then((result: any) => {
-            
             res.status(200).json({
                 status: 200,
                 count: result.length,
@@ -26,10 +25,9 @@ export const getuserById = async (req: Request, res: Response) => {
     const { id } = req.params
     await user.getUserByParam({ id })
         .then((result: any) => {
-            const {password, ...others} = result
             res.status(200).json({
                 status: 200,
-                result: others
+                result
             })
         })
         .catch(e => {
@@ -41,9 +39,9 @@ export const getuserById = async (req: Request, res: Response) => {
 }
 
 export const rejester = async (req: Request, res: Response) => {
-    let { username, email, password } = req.body as users;
-    let image = req.file?.filename 
-    await user.register({ username, email, password, image })
+    let { username, email, password } = req.body as user_input;
+    let user_image = req.file?.filename 
+    await user.register({ username, email, password, image: user_image })
         .then((result) => {
             res.status(200).json({
                 status: 200,
@@ -59,7 +57,7 @@ export const rejester = async (req: Request, res: Response) => {
 }
 
 export const login = async (req: Request, res: Response) => {
-    let { email, password } = req.body as users;
+    let { email, password } = req.body as user_login;
     await user.login({ email, password })
         .then((result: any) => {
             const token = createToken({ ...result });
@@ -81,10 +79,9 @@ export const login = async (req: Request, res: Response) => {
 }
 
 export const updateUserById = async (req: Request, res: Response) => {
-    const { username, email, password } = req.body;
-    const image = req.file?.path
+    const image = req.file?.filename
     const { id } = req.params;
-    await user.updateUser({ username, email, password, image }, { id })
+    await user.updateUser({ ...req.body , image }, { id })
         .then((result) => {
             res.status(200).json({
                 status: 200,

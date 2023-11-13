@@ -1,13 +1,13 @@
 import { Request, Response } from "express"
 import Categories from "../models/categories.model"
-import { categories } from "../dtos/category.dto"
+import { category_input } from "../dtos/category.dto"
 
 
 const category = new Categories()
 export const addNewCategory = async (req: Request, res: Response) => {
-    let { cat_name } = req.body as categories
+    let { cat_name } = req.body as category_input
     await category.addNewCategory({cat_name})
-    .then(() => {
+    .then((cat_name) => {
         res.status(200).json({
             status: 200,
             result: `category ${cat_name} inserted successfully`
@@ -16,7 +16,7 @@ export const addNewCategory = async (req: Request, res: Response) => {
     .catch((error) => {
         res.status(400).json({
             status: 400,
-            result: error || `category ${cat_name} did not insert!`
+            result: error
         })
     })
 }
@@ -73,7 +73,7 @@ export const deleteCategoryById = async (req: Request, res: Response) => {
 }
 
 export const updateCategoryById = async (req: Request, res: Response) => {
-    const { cat_name } = req.body as categories
+    const { cat_name } = req.body as category_input
     const { id } = req.params
     await category.updateCategoryById({ cat_name }, {id})
     .then((result) => {

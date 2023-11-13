@@ -7,7 +7,7 @@ export const multerStorage = (folderName: string) => {
           cb(null, `src/uploads/${folderName}`);
         },
         filename: function(req, file, cb) {
-          cb(null, Date.now() + '-' + file.originalname);
+          cb(null,  file.originalname);
         }
       });
     
