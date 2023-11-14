@@ -36,7 +36,7 @@ const cors_2 = require("./config/cors");
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
-        this.PORT = process.env.PORT || 4000;
+        this.PORT = process.env.PORT || 5000;
         this.config();
         this.routes();
         this.listen();
@@ -44,22 +44,22 @@ class Server {
     config() {
         this.app.use((0, cors_1.default)(cors_2.corsOptions));
         this.app.use(express_1.default.json());
-        this.app.use(express_1.default.static('src/uploads'));
+        this.app.use(express_1.default.static("src/uploads"));
         dotEnv.config();
     }
     routes() {
-        this.app.get('/', (req, res) => {
+        this.app.get("/", (req, res) => {
             res.json({
                 status: 200,
-                message: "welcome in ts RESTapi"
+                message: "welcome in ts RESTapi",
             });
         });
         // users
-        this.app.use('/api/users', users_routes_1.default);
+        this.app.use("/api/users", users_routes_1.default);
         // categories
-        this.app.use('/api/categories', categories_routes_1.default);
+        this.app.use("/api/categories", categories_routes_1.default);
         // posts.
-        this.app.use('/api/posts', posts_routes_1.default);
+        this.app.use("/api/posts", posts_routes_1.default);
     }
     listen() {
         const port = this.PORT;

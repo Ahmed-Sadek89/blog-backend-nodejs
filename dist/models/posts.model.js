@@ -22,23 +22,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const getImageLink_1 = require("../assets/ModelsAssets/getImageLink");
-const postCommand_1 = require("../assets/postCommand");
+const getPostInfo_1 = require("../assets/PostAssets/getPostInfo");
+const getPosts_1 = require("../assets/PostAssets/getPosts");
+const postCommand_1 = require("../assets/PostAssets/postCommand");
 const validate_1 = require("../assets/validation/validate");
 const database_1 = __importDefault(require("../config/database"));
 const model_1 = __importDefault(require("./model"));
@@ -50,14 +40,12 @@ class Posts extends model_1.default {
         Posts.command = (0, postCommand_1.getPostCommand)();
     }
     addNewPost(post) {
-        const { title, description, post_image, category_id, user_id } = post;
         const emptyProperties = (0, validate_1.validate)(post);
         return new Promise((resolve, reject) => {
-            console.log({ post_image });
             if (emptyProperties.length > 0) {
                 reject(`proprety ${emptyProperties} is requried`);
             }
-            this.insert({ title, description, post_image, category_id, user_id })
+            this.insert(Object.assign({}, post))
                 .then(() => {
                 resolve(`new post inserted successfully`);
             })
@@ -67,22 +55,24 @@ class Posts extends model_1.default {
         });
     }
     updatePostById(body, params) {
-        const { title, description, post_image, category_id } = body;
         const { id } = params;
-        const emptyProperties = (0, validate_1.validate)(body);
         return new Promise((resolve, reject) => {
-            if (emptyProperties.length > 0) {
-                reject(`proprety ${emptyProperties} is requried`);
-            }
-            else {
-                this.update({ title, description, post_image, category_id }, { id })
+            this.readByParams({ id })
+                .then((res) => {
+                return res;
+            })
+                .then((res) => {
+                this.update(Object.assign(Object.assign({}, body), { post_image: res.post_image || body.post_image }), { id })
                     .then(() => {
                     resolve(`post number ${id} updated successfully`);
                 })
                     .catch(() => {
                     reject(`post number ${id} did not update!`);
                 });
-            }
+            })
+                .catch((e) => {
+                reject(`post number ${id} is not found!`);
+            });
         });
     }
     deletePostById(params) {
@@ -106,24 +96,7 @@ class Posts extends model_1.default {
                 }
                 else {
                     if (data.length > 0) {
-                        let modifiedData = [];
-                        data.map((index) => {
-                            let { cat_id, cat_name, username, email, image } = index, others = __rest(index, ["cat_id", "cat_name", "username", "email", "image"]);
-                            let post_image = (0, getImageLink_1.getImageLink)(index.post_image);
-                            let user_image = (0, getImageLink_1.getImageLink)(image);
-                            modifiedData.push(Object.assign(Object.assign({}, others), { post_image, category: {
-                                    cat_id,
-                                    cat_name,
-                                }, user: {
-                                    username,
-                                    email,
-                                    image: user_image,
-                                } }));
-                        });
-                        resolve(modifiedData[0]);
-                    }
-                    else {
-                        resolve([]);
+                        resolve((0, getPostInfo_1.getPostInfo)(data));
                     }
                 }
             });
@@ -137,21 +110,7 @@ class Posts extends model_1.default {
                 }
                 else {
                     if (data.length > 0) {
-                        let modifiedData = [];
-                        data.map((index) => {
-                            let { cat_id, cat_name, username, email, image } = index, others = __rest(index, ["cat_id", "cat_name", "username", "email", "image"]);
-                            const post_image = (0, getImageLink_1.getImageLink)(index.post_image);
-                            const user_image = (0, getImageLink_1.getImageLink)(image);
-                            modifiedData.push(Object.assign(Object.assign({}, others), { post_image, category: {
-                                    cat_id,
-                                    cat_name,
-                                }, user: {
-                                    username,
-                                    email,
-                                    image: user_image,
-                                } }));
-                        });
-                        resolve(modifiedData);
+                        resolve((0, getPosts_1.getPosts)(data));
                     }
                     else {
                         resolve([]);
@@ -169,21 +128,7 @@ class Posts extends model_1.default {
                 }
                 else {
                     if (data.length > 0) {
-                        let modifiedData = [];
-                        data.map((index) => {
-                            let { cat_id, cat_name, username, email, image } = index, others = __rest(index, ["cat_id", "cat_name", "username", "email", "image"]);
-                            const post_image = (0, getImageLink_1.getImageLink)(index.post_image);
-                            const user_image = (0, getImageLink_1.getImageLink)(image);
-                            modifiedData.push(Object.assign(Object.assign({}, others), { post_image, category: {
-                                    cat_id,
-                                    cat_name,
-                                }, user: {
-                                    username,
-                                    email,
-                                    image: user_image,
-                                } }));
-                        });
-                        resolve(modifiedData);
+                        resolve((0, getPosts_1.getPosts)(data));
                     }
                     else {
                         resolve([]);

@@ -29,11 +29,35 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mysql_1 = __importDefault(require("mysql"));
 const dotEnv = __importStar(require("dotenv"));
 dotEnv.config();
+// const config = {
+//   user: "root",
+//   password: "",
+//   host: "localhost",
+//   database: "db_ahmed_sadek",
+//   connectAttributes: {
+//     _client_name: "mysql",
+//     _client_version: "5.7.0",
+//     _os: "Windows",
+//     _platform: "Win32",
+//     _runtime_version: "v12.18.0",
+//     _tcp_sequence_no: 1,
+//     program_name: "mysql",
+//   },
+// };
 const config = {
     user: process.env.USER,
     password: process.env.PASSWORD,
     host: process.env.HOST,
     database: process.env.DB_NAME,
+    connectAttributes: {
+        _client_name: "mysql",
+        _client_version: "5.7.0",
+        _os: "Windows",
+        _platform: "Win32",
+        _runtime_version: "v12.18.0",
+        _tcp_sequence_no: 1,
+        program_name: "mysql",
+    },
 };
 function connect() {
     return mysql_1.default.createConnection(Object.assign({}, config));
@@ -42,7 +66,7 @@ let connection = connect();
 connection.connect((err) => {
     if (err) {
         console.error("Failed to connect to MySQL server.");
-        setTimeout(connect, 2000); // Reconnect after 2 seconds.
+        connection = connect(); // Reconnect after 2 seconds.
     }
 });
 connection.on("error", (err) => {
@@ -54,5 +78,8 @@ connection.on("error", (err) => {
     else {
         throw err;
     }
+});
+connection.on("enqueue", () => {
+    connection = connect();
 });
 exports.default = connection;

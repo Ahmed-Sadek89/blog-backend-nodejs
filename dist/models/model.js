@@ -54,7 +54,7 @@ class Model {
                         resolve((0, getResultsBySelectByParams_1.getResultsBySelectByParams)(data));
                     }
                     else {
-                        reject({});
+                        resolve({});
                     }
                 }
             });

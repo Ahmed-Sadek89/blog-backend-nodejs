@@ -5,12 +5,17 @@ function validate(body) {
     let emptyProperties = [];
     body = Object.entries(body);
     if (body !== null) {
+        const isValidate = (value) => {
+            return (value === "" ||
+                Number.isNaN(value) ||
+                value === 0 ||
+                value === "0" ||
+                value === undefined ||
+                value === null ||
+                value === false);
+        };
         body.forEach((index) => {
-            if (index[1] === "" ||
-                Number.isNaN(index[1]) ||
-                index[1] === 0 ||
-                index[1] === undefined ||
-                index[1] === false) {
+            if (isValidate(index[1])) {
                 emptyProperties.push(`${index[0]}`);
             }
         });

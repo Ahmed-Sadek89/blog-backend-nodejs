@@ -18,7 +18,7 @@ const category = new categories_model_1.default();
 const addNewCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let { cat_name } = req.body;
     yield category.addNewCategory({ cat_name })
-        .then(() => {
+        .then((cat_name) => {
         res.status(200).json({
             status: 200,
             result: `category ${cat_name} inserted successfully`
@@ -27,7 +27,7 @@ const addNewCategory = (req, res) => __awaiter(void 0, void 0, void 0, function*
         .catch((error) => {
         res.status(400).json({
             status: 400,
-            result: error || `category ${cat_name} did not insert!`
+            result: error
         });
     });
 });

@@ -17,16 +17,9 @@ const posts_model_1 = __importDefault(require("../models/posts.model"));
 const post = new posts_model_1.default();
 const addNewPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const { title, description, category_id, user_id } = req.body;
-    let post_image = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
+    let post_image = (_a = req.file) === null || _a === void 0 ? void 0 : _a.filename;
     yield post
-        .addNewPost({
-        title,
-        description,
-        post_image: post_image,
-        category_id,
-        user_id,
-    })
+        .addNewPost(Object.assign(Object.assign({}, req.body), { post_image }))
         .then((result) => {
         res.status(200).json({
             status: 200,
@@ -43,11 +36,10 @@ const addNewPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.addNewPost = addNewPost;
 const updatePostById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
-    const { title, description, category_id } = req.body;
-    let post_image = (_b = req.file) === null || _b === void 0 ? void 0 : _b.path;
+    let post_image = (_b = req.file) === null || _b === void 0 ? void 0 : _b.filename;
     let { id } = req.params;
     yield post
-        .updatePostById({ title, description, post_image, category_id }, { id })
+        .updatePostById(Object.assign(Object.assign({}, req.body), { post_image }), { id })
         .then((result) => {
         res.status(200).json({
             status: 200,

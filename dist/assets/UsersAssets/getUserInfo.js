@@ -11,16 +11,11 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUsersInfo = void 0;
+exports.getUserInfo = void 0;
 const getImageLink_1 = require("../ModelsAssets/getImageLink");
-function getUsersInfo(result) {
-    let data = [];
-    let res = result;
-    res.map((index) => {
-        let { password } = index, others = __rest(index, ["password"]);
-        const user_image = (0, getImageLink_1.getImageLink)(index.image, "users");
-        data.push(Object.assign(Object.assign({}, others), { image: user_image }));
-    });
-    return data;
+function getUserInfo(result) {
+    const _a = result, { password, image } = _a, others = __rest(_a, ["password", "image"]);
+    const user_image = (0, getImageLink_1.getImageLink)(image, "users");
+    return Object.assign(Object.assign({}, others), { image: user_image });
 }
-exports.getUsersInfo = getUsersInfo;
+exports.getUserInfo = getUserInfo;

@@ -7,6 +7,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const model_1 = __importDefault(require("./model"));
 const getUsersInfo_1 = require("../assets/UsersAssets/getUsersInfo");
 const validate_1 = require("../assets/validation/validate");
+const getUserInfo_1 = require("../assets/UsersAssets/getUserInfo");
 class User extends model_1.default {
     constructor() {
         super("users");
@@ -18,6 +19,7 @@ class User extends model_1.default {
                 resolve((0, getUsersInfo_1.getUsersInfo)(result));
             })
                 .catch((error) => {
+                console.log(error);
                 reject(error);
             });
         });
@@ -26,7 +28,12 @@ class User extends model_1.default {
         return new Promise((resolve, reject) => {
             this.readByParams(params)
                 .then((result) => {
-                resolve(result);
+                if (result) {
+                    resolve((0, getUserInfo_1.getUserInfo)(result || {}));
+                }
+                else {
+                    resolve({});
+                }
             })
                 .catch((error) => {
                 reject(error);
@@ -37,7 +44,7 @@ class User extends model_1.default {
         const emptyProperty = (0, validate_1.validate)(rejester_data);
         return new Promise((resolve, reject) => {
             if (emptyProperty.length > 0) {
-                reject(`property ${emptyProperty} is required`);
+                reject(`${emptyProperty} is required`);
             }
             else {
                 const hashedPassword = bcrypt_1.default.hashSync(rejester_data.password, 10);
@@ -54,7 +61,7 @@ class User extends model_1.default {
     login(login_data) {
         const { email, password } = login_data;
         return new Promise((resolve, reject) => {
-            this.getUserByParam({ email })
+            this.readByParams({ email })
                 .then((res) => {
                 if (!res) {
                     reject("email is not found");
@@ -73,63 +80,55 @@ class User extends model_1.default {
                 }
             })
                 .catch((e) => {
+                console.log(e);
                 reject("email is not found");
             });
         });
     }
     updateUser(user, params) {
-        const emptyProperty = (0, validate_1.validate)(user);
+        const { id } = params;
         return new Promise((resolve, reject) => {
-            if (emptyProperty.length > 0) {
-                reject(`property ${emptyProperty} is required`);
-            }
-            else {
-                this.getUserByParam({ id: params.id })
-                    .then((res) => {
-                    if (!res) {
-                        reject(`user number ${params.id} is not found`);
-                    }
-                    else {
-                        return res;
-                    }
+            this.getUserByParam({ id: id })
+                .then((res) => {
+                if (!res) {
+                    reject(`user number ${id} is not found`);
+                }
+                else {
+                    return res;
+                }
+            })
+                .then((res) => {
+                const hashedPassword = bcrypt_1.default.hashSync(user.password, 10);
+                this.update(Object.assign(Object.assign({}, user), { password: hashedPassword || (res === null || res === void 0 ? void 0 : res.password), image: user.image || (res === null || res === void 0 ? void 0 : res.image) }), { id: id })
+                    .then(() => {
+                    resolve(`user number ${id} is updated successfully`);
                 })
-                    .then((res) => {
-                    const hashedPassword = bcrypt_1.default.hashSync(user.password, 10);
-                    this.update({
-                        username: user.username || (res === null || res === void 0 ? void 0 : res.username),
-                        email: user.email || (res === null || res === void 0 ? void 0 : res.email),
-                        password: hashedPassword || (res === null || res === void 0 ? void 0 : res.password),
-                        image: user.image || (res === null || res === void 0 ? void 0 : res.image),
-                    }, { id: params.id })
-                        .then(() => {
-                        resolve(`user number ${params.id} is updated successfully`);
-                    })
-                        .catch(() => reject(`user number ${params.id} did not update successfully`));
-                })
-                    .catch(() => {
-                    reject(`user number ${params.id} is not found`);
-                });
-            }
+                    .catch(() => reject(`user number ${id} did not update successfully`));
+            })
+                .catch((e) => {
+                reject(`user number ${id} is not found`);
+            });
         });
     }
     deleteUser(params) {
+        const { id } = params;
         return new Promise((resolve, reject) => {
-            this.getUserByParam({ id: params.id })
+            this.getUserByParam({ id })
                 .then((res) => {
                 if (!res) {
-                    reject(`user number ${params.id} is not found`);
+                    reject(`user number ${id} is not found`);
                 }
                 return res;
             })
                 .then(() => {
-                this.delete({ id: params.id })
+                this.delete({ id })
                     .then(() => {
-                    resolve(`user number ${params.id} is deleted successfully`);
+                    resolve(`user number ${id} is deleted successfully`);
                 })
-                    .catch(() => reject(`user number ${params.id} did not delete successfully`));
+                    .catch(() => reject(`user number ${id} did not delete successfully`));
             })
                 .catch(() => {
-                reject(`user number ${params.id} is not found`);
+                reject(`user number ${id} is not found`);
             });
         });
     }
