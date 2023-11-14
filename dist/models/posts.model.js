@@ -62,11 +62,11 @@ class Posts extends model_1.default {
                 return res;
             })
                 .then((res) => {
-                this.update(Object.assign(Object.assign({}, body), { post_image: res.post_image || body.post_image }), { id })
+                this.update(Object.assign(Object.assign({}, body), { post_image: body.post_image || res.post_image }), { id })
                     .then(() => {
                     resolve(`post number ${id} updated successfully`);
                 })
-                    .catch(() => {
+                    .catch((e) => {
                     reject(`post number ${id} did not update!`);
                 });
             })

@@ -19,7 +19,6 @@ class User extends model_1.default {
                 resolve((0, getUsersInfo_1.getUsersInfo)(result));
             })
                 .catch((error) => {
-                console.log(error);
                 reject(error);
             });
         });
@@ -80,7 +79,6 @@ class User extends model_1.default {
                 }
             })
                 .catch((e) => {
-                console.log(e);
                 reject("email is not found");
             });
         });
@@ -88,7 +86,7 @@ class User extends model_1.default {
     updateUser(user, params) {
         const { id } = params;
         return new Promise((resolve, reject) => {
-            this.getUserByParam({ id: id })
+            this.readByParams({ id })
                 .then((res) => {
                 if (!res) {
                     reject(`user number ${id} is not found`);

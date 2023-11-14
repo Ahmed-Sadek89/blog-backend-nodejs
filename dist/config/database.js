@@ -33,7 +33,7 @@ dotEnv.config();
 //   user: "root",
 //   password: "",
 //   host: "localhost",
-//   database: "db_ahmed_sadek",
+//   database: "blog",
 //   connectAttributes: {
 //     _client_name: "mysql",
 //     _client_version: "5.7.0",

@@ -42,13 +42,13 @@ class Posts extends Model {
         })
         .then((res) => {
           this.update(
-            { ...body, post_image: res.post_image || body.post_image },
+            { ...body, post_image: body.post_image || res.post_image },
             { id }
           )
             .then(() => {
               resolve(`post number ${id} updated successfully`);
             })
-            .catch(() => {
+            .catch((e) => {
               reject(`post number ${id} did not update!`);
             });
         })

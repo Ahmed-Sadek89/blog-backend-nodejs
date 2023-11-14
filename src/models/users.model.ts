@@ -24,7 +24,6 @@ class User extends Model {
           resolve(getUsersInfo(result));
         })
         .catch((error) => {
-          console.log(error);
           reject(error);
         });
     });
@@ -87,7 +86,6 @@ class User extends Model {
           }
         })
         .catch((e) => {
-          console.log(e);
           reject("email is not found");
         });
     });
