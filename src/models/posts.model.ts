@@ -1,8 +1,11 @@
 import { getImageLink } from "../assets/ModelsAssets/getImageLink";
-import { getPostCommand } from "../assets/postCommand";
+import { getPostInfo } from "../assets/PostAssets/getPostInfo";
+import { getPosts } from "../assets/PostAssets/getPosts";
+import { getPostCommand } from "../assets/PostAssets/postCommand";
 import { validate } from "../assets/validation/validate";
 import connection from "../config/database";
-import { posts } from "../dtos/posts.dto";
+import { post, post_input, post_output } from "../dtos/posts.dto";
+import { params } from "../types/models.types";
 import Model from "./model";
 import * as dotEnv from "dotenv";
 dotEnv.config();
@@ -14,15 +17,13 @@ class Posts extends Model {
     Posts.command = getPostCommand();
   }
 
-  public addNewPost(post: posts) {
-    const { title, description, post_image, category_id, user_id } = post;
+  public addNewPost(post: post_input): Promise<string> {
     const emptyProperties = validate(post);
     return new Promise((resolve, reject) => {
-      console.log({ post_image });
       if (emptyProperties.length > 0) {
         reject(`proprety ${emptyProperties} is requried`);
       }
-      this.insert({ title, description, post_image, category_id, user_id })
+      this.insert({ ...post })
         .then(() => {
           resolve(`new post inserted successfully`);
         })
@@ -32,15 +33,12 @@ class Posts extends Model {
     });
   }
 
-  public updatePostById(
-    body: { [x: string]: string | number },
-    params: { [x: string]: string | number }
-  ) {
+  public updatePostById(body: params, params: params) {
     const { id } = params;
     return new Promise((resolve, reject) => {
-      this.getPostByPostId({ id })
+      this.readByParams({ id })
         .then((res) => {
-          return res as posts;
+          return res as post;
         })
         .then((res) => {
           this.update(
@@ -53,11 +51,14 @@ class Posts extends Model {
             .catch(() => {
               reject(`post number ${id} did not update!`);
             });
+        })
+        .catch((e) => {
+          reject(`post number ${id} is not found!`);
         });
     });
   }
 
-  public deletePostById(params: { [x: string]: string | number }) {
+  public deletePostById(params: params): Promise<string> {
     const { id } = params;
     return new Promise((resolve, reject) => {
       this.delete({ id })
@@ -70,7 +71,7 @@ class Posts extends Model {
     });
   }
 
-  public getPostByPostId(params: { [x: string]: string | number }) {
+  public getPostByPostId(params: params): Promise<post_output> {
     const { id } = params;
     return new Promise((resolve, reject) => {
       connection.query(
@@ -80,29 +81,7 @@ class Posts extends Model {
             reject(error);
           } else {
             if (data.length > 0) {
-              let modifiedData: posts[] = [];
-              data.map((index: any) => {
-                let { cat_id, cat_name, username, email, image, ...others } =
-                  index;
-                const post_image = getImageLink(index.post_image, "posts");
-                const user_image = getImageLink(image, "users");
-                modifiedData.push({
-                  ...others,
-                  post_image,
-                  category: {
-                    cat_id,
-                    cat_name,
-                  },
-                  user: {
-                    username,
-                    email,
-                    image: user_image,
-                  },
-                });
-              });
-              resolve(modifiedData[0]);
-            } else {
-              resolve([]);
+              resolve(getPostInfo(data));
             }
           }
         }
@@ -110,7 +89,7 @@ class Posts extends Model {
     });
   }
 
-  public getLatestPosts() {
+  public getLatestPosts(): Promise<post_output[]> {
     return new Promise((resolve, reject) => {
       connection.query(
         `${Posts.command} order by posts.created_at desc`,
@@ -119,27 +98,7 @@ class Posts extends Model {
             reject(error);
           } else {
             if (data.length > 0) {
-              let modifiedData: posts[] = [];
-              data.map((index: any) => {
-                let { cat_id, cat_name, username, email, image, ...others } =
-                  index;
-                const post_image = getImageLink(index.post_image, "posts");
-                const user_image = getImageLink(image, "users");
-                modifiedData.push({
-                  ...others,
-                  post_image,
-                  category: {
-                    cat_id,
-                    cat_name,
-                  },
-                  user: {
-                    username,
-                    email,
-                    image: user_image,
-                  },
-                });
-              });
-              resolve(modifiedData);
+              resolve(getPosts(data));
             } else {
               resolve([]);
             }
@@ -149,9 +108,7 @@ class Posts extends Model {
     });
   }
 
-  public getLatestPostByCategory(params: {
-    [x: string]: string | number | undefined;
-  }) {
+  public getLatestPostByCategory(params: params): Promise<post_output[]> {
     let { categoryId } = params;
     return new Promise((resolve, reject) => {
       connection.query(
@@ -161,27 +118,7 @@ class Posts extends Model {
             reject(error);
           } else {
             if (data.length > 0) {
-              let modifiedData: posts[] = [];
-              data.map((index: any) => {
-                let { cat_id, cat_name, username, email, image, ...others } =
-                  index;
-                const post_image = getImageLink(index.post_image, "posts");
-                const user_image = getImageLink(image, "users");
-                modifiedData.push({
-                  ...others,
-                  post_image,
-                  category: {
-                    cat_id,
-                    cat_name,
-                  },
-                  user: {
-                    username,
-                    email,
-                    image: user_image,
-                  },
-                });
-              });
-              resolve(modifiedData);
+              resolve(getPosts(data));
             } else {
               resolve([]);
             }

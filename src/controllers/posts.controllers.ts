@@ -1,20 +1,12 @@
 import { Request, Response } from "express";
 import Posts from "../models/posts.model";
-import { posts } from "../dtos/posts.dto";
 
 const post = new Posts();
 
 export const addNewPost = async (req: Request, res: Response) => {
-  const { title, description, category_id, user_id } = req.body as posts;
   let post_image = req.file?.filename;
   await post
-    .addNewPost({
-      title,
-      description,
-      post_image: post_image,
-      category_id,
-      user_id,
-    })
+    .addNewPost({...req.body, post_image})
     .then((result) => {
       res.status(200).json({
         status: 200,
@@ -31,7 +23,6 @@ export const addNewPost = async (req: Request, res: Response) => {
 
 export const updatePostById = async (req: Request, res: Response) => {
   let post_image = req.file?.filename;
-  console.log(req.file);
   let { id } = req.params;
   await post
     .updatePostById({ ...req.body, post_image }, { id })
