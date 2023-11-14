@@ -36,7 +36,7 @@ const cors_2 = require("./config/cors");
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
-        this.PORT = process.env.PORT || 5000;
+        this.PORT = process.env.PORT || 4000;
         this.config();
         this.routes();
         this.listen();

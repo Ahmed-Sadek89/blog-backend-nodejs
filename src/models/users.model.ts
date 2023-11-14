@@ -96,7 +96,7 @@ class User extends Model {
   public updateUser(user: user_input, params: params): Promise<string> {
     const { id } = params;
     return new Promise((resolve, reject) => {
-      this.getUserByParam({ id: id })
+      this.readByParams({ id })
         .then((res) => {
           if (!res) {
             reject(`user number ${id} is not found`);

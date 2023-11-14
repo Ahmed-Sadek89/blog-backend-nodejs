@@ -12,7 +12,7 @@ class Server {
   private PORT: number | string;
   constructor() {
     this.app = express();
-    this.PORT = process.env.PORT || 5000;
+    this.PORT = process.env.PORT || 4000;
     this.config();
     this.routes();
     this.listen();
