@@ -1,4 +1,3 @@
-import { getImageLink } from "../assets/ModelsAssets/getImageLink";
 import { getPostInfo } from "../assets/PostAssets/getPostInfo";
 import { getPosts } from "../assets/PostAssets/getPosts";
 import { getPostCommand } from "../assets/PostAssets/postCommand";

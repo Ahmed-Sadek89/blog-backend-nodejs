@@ -22,6 +22,11 @@ class Model {
                     resolve(data);
                 }
             });
+            database_1.default.end((err) => {
+                if (err)
+                    throw err;
+                console.log("Connection closed.");
+            });
         });
     }
     read() {
@@ -39,6 +44,11 @@ class Model {
                         reject([]);
                     }
                 }
+            });
+            database_1.default.end((err) => {
+                if (err)
+                    throw err;
+                console.log("Connection closed.");
             });
         });
     }
@@ -58,6 +68,11 @@ class Model {
                     }
                 }
             });
+            database_1.default.end((err) => {
+                if (err)
+                    throw err;
+                console.log("Connection closed.");
+            });
         });
     }
     update(valuesSet, valuesWhere) {
@@ -71,6 +86,11 @@ class Model {
                     resolve(data);
                 }
             });
+            database_1.default.end((err) => {
+                if (err)
+                    throw err;
+                console.log("Connection closed.");
+            });
         });
     }
     delete(values) {
@@ -81,6 +101,11 @@ class Model {
                     reject(error);
                 }
                 resolve(data);
+            });
+            database_1.default.end((err) => {
+                if (err)
+                    throw err;
+                console.log("Connection closed.");
             });
         });
     }

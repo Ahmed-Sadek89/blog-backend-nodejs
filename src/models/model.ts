@@ -20,6 +20,10 @@ class Model {
           resolve(data);
         }
       });
+      connection.end((err) => {
+        if (err) throw err;
+        console.log("Connection closed.");
+      });
     });
   }
 
@@ -36,6 +40,10 @@ class Model {
             reject([]);
           }
         }
+      });
+      connection.end((err) => {
+        if (err) throw err;
+        console.log("Connection closed.");
       });
     });
   }
@@ -56,6 +64,10 @@ class Model {
             resolve({});
           }
         }
+      });
+      connection.end((err) => {
+        if (err) throw err;
+        console.log("Connection closed.");
       });
     });
   }
@@ -79,6 +91,10 @@ class Model {
           }
         }
       );
+      connection.end((err) => {
+        if (err) throw err;
+        console.log("Connection closed.");
+      });
     });
   }
 
@@ -93,6 +109,10 @@ class Model {
           reject(error);
         }
         resolve(data);
+      });
+      connection.end((err) => {
+        if (err) throw err;
+        console.log("Connection closed.");
       });
     });
   }
